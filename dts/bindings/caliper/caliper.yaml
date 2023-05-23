@@ -1,0 +1,16 @@
+description: Digital Caliper
+
+compatible: "caliper"
+
+child-binding:
+    description: caliper child node
+    properties:
+        gpios:
+            type: phandle-array
+            required: true
+        label:
+            required: true
+            type: string
+        debounce:
+            required: false
+            type: int
