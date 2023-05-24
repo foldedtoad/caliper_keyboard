@@ -9,11 +9,11 @@ These two boards are use for early development; there will be new board specific
 
 ## Theory of Operation
 The Caliper Keyboard architecture can be broken into several subsystems.
-* **Basic Bluetooth Low-Energy (BLE) functions:** Advertising, Connection Establishment and Security.
+* **Basic Bluetooth Low-Energy (BLE) functions:** Advertising, Establish Connection and Security to remote Host.
 * **Keyboard Emulation over Bluetooth functionality:** Use of HID Over GATT (HOG) to provide keyboard emulation via BLE.
 * **Caliper Interface:** Responding to and decoding the Caliper incoming frames.
 * **Snapshot Button Handling:** Handle button presses and initiate "snapshot" event sequences.
-* **Event Management:** Receive "snapshot" button events, gather one-shot caliper value, build character string and send string via keyboard emulstion.
+* **Event Management:** Receive button events, gather caliper value, build string and send string as keyboard input host.
 * **Watchdog:** Insures any critical errors are detected and reset/restart system.
 
 Each of these subsystem will be discussed in detail next.
