@@ -5,18 +5,16 @@ This project's firmware is being developed on Zephyr Version 3.3.99.
 The Nordic nRF52 series Developemt Kits are the target hardware platform: PCA10040 (nRF52832) and PCA10056 (nRF52840).
 These two boards are use for early development; there will be new board specifically designed to be affixed to the back of a caliper.
 
-
 ![here](https://github.com/foldedtoad/caliper_keyboard/blob/master/images/caliper_product_package.jpg)
-
 
 ## Theory of Operation
 The Caliper Keyboard architecture can be broken into several subsystems.
 * Basic Bluetooth Low-Energy (BLE) functions: Advertising, Connection Establishment and Security.
 * Keyboard Emulation over Bluetooth functionality: Use of HID Over GATT (HOG) to provide keyboard emulation via BLE.
-* Caliper Interface: Responding to and decoding the Caliper incoming frames
-* 
-
-
+* Caliper Interface: Responding to and decoding the Caliper incoming frames.
+* Button Eventing: Handle button presses and trigger snapshot events.
+* Event Management: Receive "snapshot" button events, gather one-shot caliper value, build character string and send string via keyboard emulstion.
+* Watchdog: Insures any critical errors are detected and reset/restart system.
 
 ## Various Caliper Interface Protocols
 There are three veriations of caliper interface protocols;
