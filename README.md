@@ -7,39 +7,4 @@ These two boards are use for early development; there will be new board specific
 
 ![here](https://github.com/foldedtoad/caliper_keyboard/blob/master/images/caliper_product_package.jpg)
 
-## Theory of Operation
-The Caliper Keyboard architecture can be broken into several subsystems.
-* **Basic Bluetooth Low-Energy (BLE) functions:** Advertising, Establish Connection and Security to remote Host.
-* **Keyboard Emulation over Bluetooth functionality:** Use of HID Over GATT (HOG) to provide keyboard emulation via BLE.
-* **Caliper Interface:** Responding to and decoding the Caliper incoming frames.
-* **Snapshot Button Handling:** Handle button presses and initiate "snapshot" event sequences.
-* **Event Management:** Receive button events, gather caliper value, build string and send string as keyboard input host.
-* **Watchdog:** Insures any critical errors are detected and reset/restart system.
-
-Each of these subsystem will be discussed in detail next.
-
-### Bluetooth Low-Energy
-
-### Keyboard (HOG)
-
-### Caliper
-
-### Button
-
-### Event Management
-
-### Watchdog 
-
-
-
-## Various Caliper Interface Protocols
-There are three veriations of caliper interface protocols;
-* Cheap calipers, mostly from China, which support the lastest protocol: one "Relative" measurement in a 24+1-bit frames.
-* "Absolute + Relative" measurement calipers, two 24-bit measurements in one frame. 
-* Mitutoyo-type calipers use a completely differenct protocol, which is beyond the scope of this project.
-
-## Caliper [BOM and Tool List](../master/CALIPER_BOM_TOOLS.md).
-
-## Some Factoids
-
-* While it may seem strange that calipers would be made from carbon fiber (plastic), there is a reasonable reason for this: Plastic doesn't stratch delicate surfaces. These plastic calipers are use by jewlery makers, musuem curators, and medical personal.
+Go to this project's [Wiki](https://github.com/foldedtoad/caliper_keyboard/wiki) page for more details.
