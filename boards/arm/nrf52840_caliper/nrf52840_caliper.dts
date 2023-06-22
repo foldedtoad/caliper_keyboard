@@ -1,0 +1,128 @@
+/*
+ * Copyright (c) 2023 Callender Consulting
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include <nordic/nrf52840_qiaa.dtsi>
+#include "nrf52840_caliper-pinctrl.dtsi"
+
+/ {
+	model = "nRF52840 CALIPER";
+	compatible = "nordic,nrf52840-dk-nrf52840";
+
+	chosen {
+		zephyr,console = &uart0;
+		zephyr,shell-uart = &uart0;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,code-partition = &slot0_partition;
+	};
+
+	buttons {
+		compatible = "gpio-keys";
+		button0: button_0 {
+			gpios = <&gpio0 4 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "SNAPSHOT";
+		};
+	};
+
+    caliper {
+        compatible = "caliper";
+        caliper_clock: clock {
+            gpios = <&gpio0 16 0>;
+            label = "CLOCK";
+        };
+        caliper_data: data {
+            gpios = <&gpio0 13 0>;
+            label = "DATA";
+        };
+        caliper_test: test {
+            gpios = <&gpio0 28 0>;
+            label = "TEST";
+        };
+    };
+
+    buzzer {
+        compatible = "calipers";
+        buzzer0: buzzer_0 {
+            gpios = <&gpio0 25 0>;  // FIXME wrong pin
+            label = "BUZZER";
+        };
+    };
+
+	aliases {
+		sw0           = &button0;
+		caliper-clock = &caliper_clock;
+        caliper-data  = &caliper_data;
+        caliper-test  = &caliper_test;
+		watchdog0     = &wdt0;
+	};
+};
+
+&gpiote {
+	status = "okay";
+};
+
+&gpio0 {
+	status = "okay";
+};
+
+&gpio1 {
+	status = "okay";
+};
+
+&uart0 {
+	compatible = "nordic,nrf-uart";
+	current-speed = <115200>;
+	status = "okay";
+	pinctrl-0 = <&uart0_default>;
+	pinctrl-1 = <&uart0_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+&flash0 {
+
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		boot_partition: partition@0 {
+			label = "mcuboot";
+			reg = <0x00000000 0x0000C000>;
+		};
+		slot0_partition: partition@c000 {
+			label = "image-0";
+			reg = <0x0000C000 0x00067000>;
+		};
+		slot1_partition: partition@73000 {
+			label = "image-1";
+			reg = <0x00073000 0x00067000>;
+		};
+		scratch_partition: partition@da000 {
+			label = "image-scratch";
+			reg = <0x000da000 0x0001e000>;
+		};
+
+		/*
+		 * The flash starting at 0x000f8000 and ending at
+		 * 0x000fffff is reserved for use by the application.
+		 */
+
+		/*
+		 * Storage partition will be used by FCB/LittleFS/NVS
+		 * if enabled.
+		 */
+		storage_partition: partition@f8000 {
+			label = "storage";
+			reg = <0x000f8000 0x00008000>;
+		};
+	};
+};
+
+&usbd {
+	compatible = "nordic,nrf-usbd";
+	status = "okay";
+};

@@ -1,0 +1,10 @@
+identifier: nrf52840_caliper
+name: nRF52840-CALIPER
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+supported:
+  - usb_device
+  - ble
