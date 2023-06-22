@@ -9,6 +9,7 @@
 
 #include "events.h"
 #include "watchdog.h"
+#include "shell.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(main, 3);
@@ -82,6 +83,8 @@ void main_thread(void * id, void * unused1, void * unused2)
     caliper_init();
 
     events_init();
+
+    caliper_shell_init();
 
     watchdog_init();
 

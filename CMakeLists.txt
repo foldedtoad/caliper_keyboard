@@ -5,10 +5,11 @@ cmake_minimum_required(VERSION 3.20.0)
 set_property(GLOBAL APPEND PROPERTY HEX_FILES_TO_MERGE
       ${app_provision_hex})
 
+set(BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(DTS_ROOT_BINDINGS "${CMAKE_CURRENT_SOURCE_DIR}")
 
-#set(BOARD nrf52dk_nrf52832)
 set(BOARD nrf52840dk_nrf52840)
+#set(BOARD nrf52840_caliper)
 
 find_package(Zephyr)
 project(caliper)

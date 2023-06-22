@@ -35,7 +35,7 @@ static void events_build_string(short value, int standard)
     else
         value_float /= 1000.0;
 
-    snprintf(string, sizeof(string), "%.2f %s", value_float,
+    snprintf(string, sizeof(string), "%.2f %s\n", value_float,
             (standard == CALIPER_STANDARD_MM) ? "mm" : "inch");
 
     LOG_INF("string: \"%s\"", string);
