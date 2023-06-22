@@ -38,9 +38,9 @@
             gpios = <&gpio0 13 0>;
             label = "DATA";
         };
-        caliper_test: test {
+        caliper_debug: debug {
             gpios = <&gpio0 28 0>;
-            label = "TEST";
+            label = "DEBUG";
         };
     };
 
@@ -56,7 +56,7 @@
 		sw0           = &button0;
 		caliper-clock = &caliper_clock;
         caliper-data  = &caliper_data;
-        caliper-test  = &caliper_test;
+        caliper-debug = &caliper_debug;
 		watchdog0     = &wdt0;
 	};
 };

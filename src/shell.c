@@ -95,16 +95,11 @@ int caliper_shell_init(void)
 
     uart_dev = DEVICE_DT_GET(DT_NODELABEL(uart0));
 
-#if 1
     if (!uart_dev) {
-        //LOG_ERR("device not found. %s", DEVICE_DT_NAME(UART_NODEs);
         return -1;
     }
 
-    LOG_INF("Board '%s', UART '%s', device %p",
-            CONFIG_BOARD, uart_dev->name, uart_dev);
-
-#endif
+    LOG_INF("UART '%s'", uart_dev->name);
 
     return 0;
 }

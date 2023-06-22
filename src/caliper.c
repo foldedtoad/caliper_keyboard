@@ -30,8 +30,8 @@ static const struct gpio_dt_spec data_spec =
                         GPIO_DT_SPEC_GET_OR(DATA_NODE, gpios, 0);
 
 #if 0
-static const struct gpio_dt_spec test_spec = 
-                        GPIO_DT_SPEC_GET_OR(TEST_NODE, gpios, 0});
+static const struct gpio_dt_spec debug_spec = 
+                        GPIO_DT_SPEC_GET_OR(DEBUG_NODE, gpios, 0});
 #endif
 
 static struct gpio_callback clock_irq_cb_data;
@@ -315,9 +315,9 @@ void caliper_init(void)
 
 #if 0
     /*
-     *  optional: Initialize TEST pin: output to logic analyzer
+     *  optional: Initialize debug pin: output to logic analyzer
      */
-    gpio_pin_configure_dt(&test_spec, (GPIO_PULL_DOWN | GPIO_OUTPUT));
+    gpio_pin_configure_dt(&debug_spec, (GPIO_PULL_DOWN | GPIO_OUTPUT));
 #endif
 
     caliper_power_state = CALIPER_POWER_ON;
