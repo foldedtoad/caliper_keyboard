@@ -11,7 +11,7 @@ Go to this project's [Wiki](https://github.com/foldedtoad/caliper_keyboard/wiki)
 To build, use the following flow.
 1) cd to your caliper_keyboard root directory
 2) run "./configure.sh"
-3) cd to build diretory
+3) cd to build directory
 4) make
 
 This build method use cmake directly, and doesn't use west or ninja.
