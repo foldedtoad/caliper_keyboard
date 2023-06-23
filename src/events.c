@@ -38,7 +38,7 @@ static void events_build_string(short value, int standard)
     snprintf(string, sizeof(string), "%.2f %s\n", value_float,
             (standard == CALIPER_STANDARD_MM) ? "mm" : "inch");
 
-    LOG_INF("string: \"%s\"", string);
+    LOG_INF("string: %s", string);
 }
 
 /*---------------------------------------------------------------------------*/
