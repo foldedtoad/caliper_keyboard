@@ -10,6 +10,7 @@
 #include "events.h"
 #include "watchdog.h"
 #include "shell.h"
+#include "app_uicr.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(main, 3);
@@ -77,6 +78,8 @@ void main_thread(void * id, void * unused1, void * unused2)
 
     LOG_INF("*** Reset Reason: (0x%02X) %s", 
             reset_reason, get_reason_text(reset_reason));
+
+    app_uicr_init();
 
     buttons_init();
 
