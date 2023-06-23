@@ -47,7 +47,7 @@
     buzzer {
         compatible = "calipers";
         buzzer0: buzzer_0 {
-            gpios = <&gpio0 25 0>;  // FIXME wrong pin
+            gpios = <&gpio0 28 0>;
             label = "BUZZER";
         };
     };
