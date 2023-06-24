@@ -71,7 +71,7 @@ static int cmd_shell_line_end(const struct shell *sh, size_t argc, char *argv[])
             break;
 
         case NEWLINE:
-            app_uicr_set_standard(ASCIIZ);
+            app_uicr_set_line_end(ASCIIZ);
             string = "ASCIIZ";
             break;
 
@@ -79,6 +79,8 @@ static int cmd_shell_line_end(const struct shell *sh, size_t argc, char *argv[])
             shell_print(sh, "unknown [line_end] state %d", state);
             string = "???";
     }
+
+    shell_print(sh, "[line_end] %s", string);
 
     return 0;
 }
@@ -114,6 +116,7 @@ static int cmd_shell_standard(const struct shell *sh, size_t argc, char *argv[])
     }
 
     shell_print(sh, "[standard] %s", string);
+
     return 0;
 }
 

@@ -37,21 +37,32 @@ LOG_MODULE_REGISTER(uicr, 3);
 static const struct device * const device =
                   DEVICE_DT_GET_OR_NULL(DT_CHOSEN(zephyr_flash_controller));
 
+/*
+ *  Notes:
+ *      flash erase flash-controller@4001e000 10001000 308  // fpr UICR page
+ *      flash read  flash-controller@4001e000 10001080
+ *      flash write flash-controller@4001e000 10001080 2
+ *      (off_t)NRF_UICR = 0x10001000
+ *      sizeof(*NRF_UICR) = 0x308
+ */
+
+static uint8_t copy_buffer [sizeof(*NRF_UICR)];
+
+
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-uint32_t app_uicr_read_one(off_t addr)
+uint8_t app_uicr_read_one(off_t addr)
 {
-    uint32_t data;
+    uint8_t data;
 
-    int ret = flash_read(device, addr, (void*)&data, sizeof(uint32_t));
+    int ret = flash_read(device, addr, (void*)&data, sizeof(uint8_t));
     if (ret != 0) {
-        LOG_ERR("Flash_read failed: %d", ret);
+        LOG_ERR("%s: Flash_read failed: %d", __func__, ret);
         return ret;
     }
 
-    LOG_INF("Flash_read: addr(%p): 0x%x, (%d)", 
-                (void*)addr, data, sizeof(data));
+    LOG_INF("%s: addr(%p): value(0x%x)", __func__, (void*)addr, data);
 
     return data;
 }
@@ -59,16 +70,42 @@ uint32_t app_uicr_read_one(off_t addr)
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-void app_uicr_write_one(off_t addr, uint32_t data)
+void app_uicr_write_one(off_t addr, uint8_t data)
 {
-    int ret = flash_write(device, addr, (void*)&data, sizeof(data));
-    if (ret < 0) {
-        LOG_ERR("Flash_write failed: %d", ret);
+    int    ret;
+    off_t  uicr_page_base = (off_t)NRF_UICR;
+    size_t uicr_page_size = sizeof(*NRF_UICR);
+
+    //LOG_INF("%s: entry: %p, data(%d)", __func__, (void*)addr, data);
+
+    //LOG_INF("%s: read UICR", __func__);
+    ret = flash_read(device, uicr_page_base,
+                    (void*)&copy_buffer, uicr_page_size);
+    if (ret != 0) {
+        LOG_ERR("Flash_write: read UICR failed: %d", ret);
         return;
     }
 
-    LOG_INF("Flash_write addr(%p): 0x%x, (%d)",
-                (void*)addr, data, sizeof(data));
+    //LOG_INF("%s: erase UICR", __func__);
+    ret = flash_erase(device, uicr_page_base, uicr_page_size);
+    if (ret != 0) {
+        LOG_ERR("Flash_write: erase UICR failed: %d", ret);
+        return;
+    }
+
+    copy_buffer[addr - uicr_page_base] = data;
+
+    //LOG_INF("%s: write UICR", __func__);
+    ret = flash_write(device, uicr_page_base,
+                      (void*)&copy_buffer, uicr_page_size);
+    if (ret < 0) {
+        LOG_ERR("Flash_write: write failed: %d", ret);
+        return;
+    }
+
+    LOG_INF("%s: addr(%p): 0x%x", __func__, (void*)addr, data);
+
+    //LOG_INF("%s: exit", __func__);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -78,8 +115,8 @@ line_end_t app_uicr_get_line_end(void)
 {
     line_end_t line_end = app_uicr_read_one((uint32_t)&NRF_UICR->REG_LINE_END);
 
-    LOG_INF("%s: Get LINE_END: [0x%x] 0x%x", __func__,
-            (uint32_t)&NRF_UICR->REG_LINE_END, (uint32_t)line_end);    
+    LOG_INF("%s: Get LINE_END: addr [0x%x], value: 0x%x", __func__,
+            (uint32_t)&NRF_UICR->REG_LINE_END, (uint8_t)line_end);    
 
     return line_end;
 }
@@ -89,10 +126,10 @@ line_end_t app_uicr_get_line_end(void)
 /*---------------------------------------------------------------------------*/
 void app_uicr_set_line_end(line_end_t line_end)
 {
-    LOG_INF("%s: Set LINE_END: [0x%x] 0x%x", __func__, 
+    LOG_INF("%s: Set LINE_END: addr [0x%x], value: 0x%x", __func__, 
             (uint32_t)&NRF_UICR->REG_LINE_END, line_end);
 
-    app_uicr_write_one((uint32_t)&NRF_UICR->REG_LINE_END, (uint32_t)line_end);   
+    app_uicr_write_one((off_t)&NRF_UICR->REG_LINE_END, (uint8_t)line_end);   
 }
 
 /*---------------------------------------------------------------------------*/
@@ -102,8 +139,8 @@ standard_t app_uicr_get_standard(void)
 {
     standard_t standard = app_uicr_read_one((uint32_t)&NRF_UICR->REG_STANDARD);
 
-    LOG_INF("%s: Get STANDARD: [0x%x] 0x%x", __func__,
-            (uint32_t)&NRF_UICR->REG_STANDARD, (uint32_t)standard);
+    LOG_INF("%s: Get STANDARD: addr: [0x%x], value: 0x%x", __func__,
+            (uint32_t)&NRF_UICR->REG_STANDARD, (uint8_t)standard);
 
     return standard;
 }
@@ -113,10 +150,10 @@ standard_t app_uicr_get_standard(void)
 /*---------------------------------------------------------------------------*/
 void app_uicr_set_standard(standard_t standard)
 {
-    LOG_INF("%s: Set STANDARD: [0x%x] 0x%x", __func__,
+    LOG_INF("%s: Set STANDARD: addr: [0x%x], value: 0x%x", __func__,
             (uint32_t)&NRF_UICR->REG_STANDARD, standard);
 
-    app_uicr_write_one((uint32_t)&NRF_UICR->REG_STANDARD, (uint32_t)standard);   
+    app_uicr_write_one((uint32_t)&NRF_UICR->REG_STANDARD, (uint8_t)standard);   
 }
 
 /*---------------------------------------------------------------------------*/
