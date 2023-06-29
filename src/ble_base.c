@@ -23,9 +23,8 @@
 
 #include "keyboard.h" 
 
-#define LOG_LEVEL 3 //CONFIG_LOG_DEFAULT_LEVEL
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(ble_base);
+LOG_MODULE_REGISTER(ble_base, LOG_LEVEL_INF);
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -283,7 +282,7 @@ void ble_base_thread(void * id, void * unused1, void * unused2)
 }
 
 /*---------------------------------------------------------------------------*/
-/*  Define working thread for Bluetooth Broadcaster to run on                */
+/*  Define working thread for Bluetooth to run on                            */
 /*---------------------------------------------------------------------------*/
 K_THREAD_DEFINE(ble_base_id, STACKSIZE, ble_base_thread, 
                 NULL, NULL, NULL, PRIORITY, 0, 0);

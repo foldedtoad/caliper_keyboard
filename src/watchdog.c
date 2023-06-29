@@ -10,7 +10,7 @@
 #include "watchdog.h"
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(watchdog, 3);
+LOG_MODULE_REGISTER(watchdog, LOG_LEVEL_INF);
 
 /*
  *  To use this sample the devicetree's /aliases must 

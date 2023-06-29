@@ -15,9 +15,8 @@
 #include "keyboard.h"
 #include "buttons.h"
 
-#define LOG_LEVEL 3
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(caliper);
+LOG_MODULE_REGISTER(caliper, LOG_LEVEL_INF);
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -179,13 +178,6 @@ static void caliperBackend(void * unused)
         k_sem_give(&caliper_read_done_sem);
 
         gpio_pin_interrupt_configure_dt(&clock_spec, GPIO_INT_DISABLE);
-
-#if 0
-        /*
-         *  Start inactive timer to determine if calipers are powered off.
-         */
-        k_timer_start(&caliper_inactive_timer, K_SECONDS(1), K_NO_WAIT);
-#endif
     }
 }
 
@@ -194,7 +186,7 @@ static void caliperBackend(void * unused)
 /*---------------------------------------------------------------------------*/
 int caliper_read_value(short * value, int * standard)
 {
-    LOG_INF("%s ", __func__);
+    LOG_DBG("%s ", __func__);
 
     /*
      *  Start inactive timer to determine if calipers are powered off.
@@ -222,7 +214,7 @@ int caliper_read_value(short * value, int * standard)
 /*---------------------------------------------------------------------------*/
 bool is_caliper_on(void)
 {
-    LOG_INF("%s: %s", __func__, 
+    LOG_DBG("%s: %s", __func__, 
            (caliper_power_state == CALIPER_POWER_ON) ? "ON" : "OFF");
 
     return caliper_power_state;

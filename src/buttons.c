@@ -11,7 +11,7 @@
 #include "buttons.h"
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(buttons, 3);
+LOG_MODULE_REGISTER(buttons, LOG_LEVEL_INF);
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */

@@ -16,7 +16,7 @@
 #include "app_uicr.h" 
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(shell, 3);
+LOG_MODULE_REGISTER(shell, LOG_LEVEL_INF);
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -130,7 +130,7 @@ static int cmd_shell_test(const struct shell *sh, size_t argc, char *argv[])
 
     char * string = (char*) argv[1];
 
-    shell_print(sh, "test: %s", string);
+    shell_print(sh, "test: %s\n", string);
 
     keyboard_send_string(string);
 
