@@ -46,6 +46,8 @@ static const button_info_t button_info [] = {
 
 static const button_info_t unknown = {.id=INVALID_ID, .pin=0 , .bit= 0, .name= "???"};
 
+#define DEBOUNCE_MS 150
+
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
@@ -88,7 +90,12 @@ void buttons_event(const struct device * gpiob,
 
     //LOG_INF("%s pin(%d)", buttons.current->name, buttons.current->pin);
 
-    k_work_submit(&buttons.work);
+    if (gpio_pin_get(gpiob, buttons.current->pin) == 1) {
+        k_msleep(DEBOUNCE_MS);
+        if (gpio_pin_get(gpiob, buttons.current->pin) == 1) {
+            k_work_submit(&buttons.work);
+        }
+    }
 }
 
 /*---------------------------------------------------------------------------*/
