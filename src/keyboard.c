@@ -28,9 +28,8 @@
 #include "ble_base.h"
 #include "caliper.h"
 
-#define LOG_LEVEL 3
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(keyboard);
+LOG_MODULE_REGISTER(keyboard, LOG_LEVEL_INF);
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */

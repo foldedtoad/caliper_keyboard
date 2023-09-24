@@ -13,9 +13,10 @@
 #include <inttypes.h>
 
 #include "events.h"
+#include "app_uicr.h"
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(events, 3);
+LOG_MODULE_REGISTER(events, LOG_LEVEL_INF);
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -35,8 +36,17 @@ static void events_build_string(short value, int standard)
     else
         value_float /= 1000.0;
 
-    snprintf(string, sizeof(string), "%.2f %s\n", value_float,
-            (standard == CALIPER_STANDARD_MM) ? "mm" : "inch");
+    snprintf(string, sizeof(string), "%.2f", value_float);
+
+    if (app_uicr_get_standard() == INCLUDE) {
+        strncat(string,
+                 (standard == CALIPER_STANDARD_MM) ? " mm" : " inch",
+                    sizeof(string) - strlen(string));
+    }
+
+    if (app_uicr_get_line_end() == NEWLINE) {
+        strncat(string, "\n", sizeof(string) - strlen(string));
+    }
 
     LOG_INF("string: %s", string);
 }
@@ -53,12 +63,12 @@ static void events_snapshot(buttons_id_t btn_id)
     LOG_INF("%s: Snapshot", __func__);
 
     if (is_caliper_on() == CALIPER_POWER_OFF) {
-        LOG_INF("Caliper is off");
+        LOG_WRN("Caliper is off");
         return;
     }
 
     if (is_bt_connected() == false) {
-        LOG_INF("BLE not connected");
+        LOG_ERR("BLE not connected");
         return;
     }
 
