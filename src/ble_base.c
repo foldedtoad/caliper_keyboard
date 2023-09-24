@@ -179,9 +179,41 @@ static void security_changed(struct bt_conn *conn, bt_security_t level,
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
+static bool le_param_req(struct bt_conn *conn, struct bt_le_conn_param *param)
+{
+    char addr[BT_ADDR_LE_STR_LEN];
+
+    bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
+
+    LOG_INF("LE conn  param req: %s int (0x%04x, 0x%04x) lat %d to %d",
+            addr, param->interval_min, param->interval_max, param->latency,
+            param->timeout);
+
+    return true;
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+static void le_param_updated(struct bt_conn *conn, uint16_t interval,
+                             uint16_t latency, uint16_t timeout)
+{
+    char addr[BT_ADDR_LE_STR_LEN];
+
+    bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
+
+    LOG_INF("LE conn param updated: %s int 0x%04x lat %d to %d",
+            addr, interval, latency, timeout);
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
 BT_CONN_CB_DEFINE(conn_callbacks) = {
     .connected        = connected,
     .disconnected     = disconnected,
+    .le_param_req     = le_param_req,
+    .le_param_updated = le_param_updated,
     .security_changed = security_changed,
 };
 

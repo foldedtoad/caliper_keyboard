@@ -20,6 +20,7 @@ LOG_MODULE_REGISTER(buttons, LOG_LEVEL_INF);
 #define SW_GPIO_DEV    DT_NODELABEL(gpio0)
 
 #define SW0_PIN        DT_GPIO_PIN(DT_ALIAS(sw0), gpios)
+#define SW0_FLAGS      DT_GPIO_FLAGS(DT_ALIAS(sw0), gpios)
 //#define SW1_PIN        DT_GPIO_PIN(DT_ALIAS(sw1), gpios)
 //#define SW2_PIN        DT_GPIO_PIN(DT_ALIAS(sw2), gpios)
 //#define SW3_PIN        DT_GPIO_PIN(DT_ALIAS(sw3), gpios)
@@ -133,10 +134,11 @@ void buttons_init(void)
 
     k_work_init(&buttons.work, buttons_worker);
 
+    //LOG_INF("SW0_PIN: %d", SW0_PIN);
+
     /* Init Button Interrupt */
-    int flags = (GPIO_INPUT      | 
-                 GPIO_ACTIVE_LOW |  
-                 GPIO_PULL_UP    | 
+    int flags = (GPIO_INPUT       | 
+                 SW0_FLAGS        |   
                  GPIO_INT_EDGE);
 
     gpio_pin_configure(gpiob, SW0_PIN, flags);

@@ -8,8 +8,8 @@ set_property(GLOBAL APPEND PROPERTY HEX_FILES_TO_MERGE
 set(BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(DTS_ROOT_BINDINGS "${CMAKE_CURRENT_SOURCE_DIR}")
 
-set(BOARD nrf52840dk_nrf52840)
-#set(BOARD nrf52840_caliper)
+#set(BOARD nrf52840dk_nrf52840)
+set(BOARD nrf52840_caliper)
 
 find_package(Zephyr)
 project(caliper)
