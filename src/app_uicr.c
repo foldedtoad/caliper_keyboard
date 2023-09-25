@@ -39,7 +39,7 @@ static const struct device * const device =
 
 /*
  *  Notes:
- *      flash erase flash-controller@4001e000 10001000 308  // fpr UICR page
+ *      flash erase flash-controller@4001e000 10001000 308  // for UICR page
  *      flash read  flash-controller@4001e000 10001080
  *      flash write flash-controller@4001e000 10001080 2
  *      (off_t)NRF_UICR = 0x10001000
