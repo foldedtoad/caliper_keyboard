@@ -83,19 +83,12 @@ void buttons_event(const struct device * gpiob,
                    struct gpio_callback * cb,
                    uint32_t pins)
 {
-    buttons.current = (button_info_t *) button_get_info(pins);
-    if (buttons.current->id == INVALID_ID) {
+    button_info_t * current = (button_info_t *) button_get_info(pins);
+    if (current->id == INVALID_ID)
         return;
-    }
+    buttons.current = current;
 
-    //LOG_INF("%s pin(%d)", buttons.current->name, buttons.current->pin);
-
-    if (gpio_pin_get(gpiob, buttons.current->pin) == 1) {
-        k_msleep(DEBOUNCE_MS);
-        if (gpio_pin_get(gpiob, buttons.current->pin) == 1) {
-            k_work_submit(&buttons.work);
-        }
-    }
+    k_work_submit(&buttons.work);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -103,10 +96,13 @@ void buttons_event(const struct device * gpiob,
 /*---------------------------------------------------------------------------*/
 static void buttons_worker(struct k_work * work)
 {
-    //LOG_INF("%s pin(%d)", buttons.current->name, buttons.current->pin);
-
-    if (buttons.notify) {
-        buttons.notify(buttons.current->id);
+    if (gpio_pin_get(gpiob, buttons.current->pin) == 1) {
+        k_msleep(DEBOUNCE_MS);
+        if (gpio_pin_get(gpiob, buttons.current->pin) == 1) {
+            if (buttons.notify) {
+                buttons.notify(buttons.current->id);
+            }
+        }
     }
 }
 
