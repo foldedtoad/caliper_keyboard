@@ -36,9 +36,17 @@ static int cmd_shell_info(const struct shell *sh, size_t argc, char *argv[])
     char * line_end;
     char * standard;
 
-    line_end = (app_uicr_get_line_end() == NEWLINE) ? "NEWLINE" : "ASCIIZ";
+    switch (app_uicr_get_line_end()) { 
+        case ASCIIZ:  line_end = "ASCIIZ";    break;
+        case NEWLINE: line_end = "NEWLINE";   break;
+        default:      line_end = "<unknown>"; break;
+    }
 
-    standard = (app_uicr_get_standard() == INCLUDE) ? "INCLUDE" : "EXCLUDE";
+    switch (app_uicr_get_standard()) {
+        case INCLUDE: standard = "INCLUDE";   break;
+        case EXCLUDE: standard = "EXCLUDE";   break;
+        default:      standard = "<unknown>"; break;
+    }
 
     shell_print(sh, "** Welcome to Caliper Keyboard");
     shell_print(sh, "** Built on %s at %s", __DATE__, __TIME__);
@@ -58,26 +66,13 @@ static int cmd_shell_line_end(const struct shell *sh, size_t argc, char *argv[])
     ARG_UNUSED(argc);
     ARG_UNUSED(argv);
 
-    line_end_t state;
     char * string;
 
-    state = app_uicr_get_line_end();
-
-    switch (state) {
-
-        case ASCIIZ:
-            app_uicr_set_line_end(NEWLINE);
-            string = "NEWLINE"; 
-            break;
-
-        case NEWLINE:
-            app_uicr_set_line_end(ASCIIZ);
-            string = "ASCIIZ";
-            break;
-
-        default:
-            shell_print(sh, "unknown [line_end] state %d", state);
-            string = "???";
+    /* Rotate to next line_end type */
+    switch (app_uicr_get_line_end()) {
+        case ASCIIZ:  app_uicr_set_line_end(NEWLINE); string = "NEWLINE"; break;
+        case NEWLINE: app_uicr_set_line_end(ASCIIZ);  string = "ASCIIZ";  break;
+        default:                                      string = "???";     break;
     }
 
     shell_print(sh, "[line_end] %s", string);
@@ -93,26 +88,12 @@ static int cmd_shell_standard(const struct shell *sh, size_t argc, char *argv[])
     ARG_UNUSED(argc);
     ARG_UNUSED(argv);
 
-    standard_t state;
     char * string;
 
-    state = app_uicr_get_standard();
-
-    switch (state) {
-
-        case INCLUDE:
-            app_uicr_set_standard(EXCLUDE);
-            string = "EXCLUDE"; 
-            break;
-
-        case EXCLUDE:
-            app_uicr_set_standard(INCLUDE);
-            string = "INCLUDE";
-            break;
-
-        default:
-            shell_print(sh, "unknown [standard] state %d", state);
-            string = "???";
+    switch (app_uicr_get_standard()) {
+        case INCLUDE: app_uicr_set_standard(EXCLUDE); string = "EXCLUDE"; break;
+        case EXCLUDE: app_uicr_set_standard(INCLUDE); string = "INCLUDE"; break;
+        default:                                      string = "???";     break;
     }
 
     shell_print(sh, "[standard] %s", string);

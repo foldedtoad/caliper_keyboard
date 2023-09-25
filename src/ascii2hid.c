@@ -11,7 +11,9 @@ int ascii_to_hid(uint8_t ascii)
 {
 	if (ascii < 32) {
 		switch (ascii) {
+		case 0x09:                // Horizontal Tab
 		case 0x0A:                // New Line
+		case 0x0B:                // Vertical Tab
 		case 0x0C:                // Form Feed
 		case 0x0D:                // Carriage Return
 			return HID_KEY_ENTER;

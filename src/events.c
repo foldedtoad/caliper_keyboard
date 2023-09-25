@@ -30,6 +30,7 @@ static char string[24];
 static void events_build_string(short value, int standard)
 {
     float value_float = ((float) value);
+    char * line_end;
 
     if (standard == CALIPER_STANDARD_MM)
         value_float /= 100.0;
@@ -44,9 +45,12 @@ static void events_build_string(short value, int standard)
                     sizeof(string) - strlen(string));
     }
 
-    if (app_uicr_get_line_end() == NEWLINE) {
-        strncat(string, "\n", sizeof(string) - strlen(string));
+    switch (app_uicr_get_line_end()) { 
+        default:
+        case ASCIIZ:  line_end = "";      break;
+        case NEWLINE: line_end = "\n";    break;
     }
+    strncat(string, line_end, sizeof(string) - strlen(string));
 
     LOG_INF("string: %s", string);
 }

@@ -16,6 +16,8 @@ typedef enum{
     INVALID_LINE_END = 0,
     ASCIIZ           = 1,  // ASCII string with zero end
     NEWLINE          = 2,  // ASCII string with \n and zero end
+//    HTAB             = 3,  // ASCII Horizontal Tab and zero end
+//    VTAB             = 4,  // ASCII Vertical TAB and zero end
 } line_end_t;
 
 typedef enum{

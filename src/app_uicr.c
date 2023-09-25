@@ -95,7 +95,7 @@ void app_uicr_write_one(off_t addr, uint8_t data)
 
     copy_buffer[addr - uicr_page_base] = data;
 
-    //LOG_INF("%s: write UICR", __func__);
+    LOG_DBG("%s: write UICR", __func__);
     ret = flash_write(device, uicr_page_base,
                       (void*)&copy_buffer, uicr_page_size);
     if (ret < 0) {
