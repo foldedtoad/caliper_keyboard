@@ -161,14 +161,15 @@ static void battery_lvl_process(void)
         percentage = battery_voltage_to_soc[lut_id];
     }
 
-#if 1
-    LOG_INF("Battery level: %u%%", percentage);
+    if (is_bt_connected()) {
+#if 1        
+        LOG_INF("Battery level: %u%%", percentage);
 #else
-    LOG_INF("Battery level: %u%% (%u mV) [%d], raw(%u)", 
+        LOG_INF("Battery level: %u%% (%u mV) [%d], raw(%u)", 
              percentage, milliVolts, lut_id, adc_buffer);
-#endif
-
-    bt_bas_set_battery_level(percentage);
+#endif        
+        bt_bas_set_battery_level(percentage);
+    }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -270,7 +271,6 @@ void battery_thread(void * id, void * unused1, void * unused2)
         }
         else {
             battery_stop();
-
         }
         k_sleep(K_SECONDS(10));
     }        

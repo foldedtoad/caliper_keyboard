@@ -21,6 +21,7 @@
 #include <zephyr/bluetooth/services/bas.h> 
 #include <zephyr/bluetooth/services/dis.h> 
 
+#include "ble_base.h"
 #include "keyboard.h" 
 
 #include <zephyr/logging/log.h>
@@ -36,7 +37,7 @@ LOG_MODULE_REGISTER(ble_base, LOG_LEVEL_INF);
 #define DEVICE_NAME     CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN (sizeof(DEVICE_NAME) - 1)
 
-K_SEM_DEFINE(ble_base_sem, 0, 1);
+static ble_connected_callback_t ble_connected_callback = NULL;
 
 static const char * levels[] = {
     "L0",
@@ -138,6 +139,11 @@ static void connected(struct bt_conn *conn, uint8_t err)
         LOG_ERR("Failed to set security: %d", ret);
     }
 
+    /* Create connected event */
+    if (ble_connected_callback) {
+        ble_connected_callback(true);
+    }
+
     bt_connected = true;
 }
 
@@ -151,6 +157,11 @@ static void disconnected(struct bt_conn *conn, uint8_t reason)
     bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
     LOG_INF("Disconnected from %s, reason %d", addr, reason);
+
+    /* Create disconnected event */
+    if (ble_connected_callback) {
+        ble_connected_callback(false);
+    }
 
     bt_connected = false;
 
@@ -274,47 +285,37 @@ static struct bt_conn_auth_cb auth_cb_display = {
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-static void bas_notify(void)
+void ble_register_connect_handler(ble_connected_callback_t callback)
 {
-    uint8_t battery_level = bt_bas_get_battery_level();
-
-    battery_level--;
-
-    if (battery_level == 50) {
-        battery_level = 100U;
-    }
-
-    bt_bas_set_battery_level(battery_level);
+    ble_connected_callback = callback;
 }
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-void ble_base_thread(void * id, void * unused1, void * unused2)
+void ble_unregister_notify_handler(void)
+{
+    ble_connected_callback = NULL;
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+int ble_base_init(void)
 {
     int err;
 
-    LOG_INF("%s starting...", __func__);
+    LOG_INF("%s", __func__);
 
     bt_connected = false;
 
     err = bt_enable(bt_ready);
     if (err) {
         LOG_ERR("Bluetooth not ready: %d", err);
-        return;
+        return err;
     }
 
     bt_conn_auth_cb_register(&auth_cb_display); 
 
-    /* Battery level */
-    while (1) {
-        k_sleep(K_SECONDS(30));
-        bas_notify();
-    }    
+    return 0; 
 }
-
-/*---------------------------------------------------------------------------*/
-/*  Define working thread for Bluetooth to run on                            */
-/*---------------------------------------------------------------------------*/
-K_THREAD_DEFINE(ble_base_id, STACKSIZE, ble_base_thread, 
-                NULL, NULL, NULL, PRIORITY, 0, 0);
