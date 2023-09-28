@@ -16,7 +16,7 @@
 #include "app_uicr.h" 
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(shell, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(app_shell, LOG_LEVEL_INF);
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */

@@ -10,6 +10,7 @@
 #include "events.h"
 #include "watchdog.h"
 #include "shell.h"
+#include "battery.h"
 #include "app_uicr.h"
 
 #include <zephyr/logging/log.h>
@@ -88,6 +89,8 @@ void main_thread(void * id, void * unused1, void * unused2)
     events_init();
 
     caliper_shell_init();
+
+    battery_init();
 
     watchdog_init();
 
