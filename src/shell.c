@@ -14,6 +14,8 @@
 #include "shell.h"
 #include "keyboard.h" 
 #include "app_uicr.h" 
+#include "ble_base.h"
+#include "caliper.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app_shell, LOG_LEVEL_INF);
@@ -51,6 +53,8 @@ static int cmd_shell_info(const struct shell *sh, size_t argc, char *argv[])
     shell_print(sh, "** Welcome to Caliper Keyboard");
     shell_print(sh, "** Built on %s at %s", __DATE__, __TIME__);
     shell_print(sh, "** Board '%s'", CONFIG_BOARD);
+    shell_print(sh, "** Caliper %s", is_caliper_on()?"ON":"OFF");
+    shell_print(sh, "** BLE connected: %s", is_bt_connected()?"yes":"no");
     shell_print(sh, "** Parameters --");
     shell_print(sh, "**   [line_end] %s", line_end);
     shell_print(sh, "**   [standard] %s", standard);

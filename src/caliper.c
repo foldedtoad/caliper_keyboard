@@ -235,6 +235,17 @@ void caliper_inactive_callback(struct k_timer * timer)
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
+void caliper_power_on_test(void)
+{
+    short value;
+    int   standard;
+
+    caliper_read_value(&value, &standard);
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
 void caliperInterrupt(const struct device * dev, 
                       struct gpio_callback * cb,
                       uint32_t bitarray)
@@ -305,12 +316,15 @@ void caliper_init(void)
      */
     gpio_pin_configure_dt(&data_spec, (GPIO_PULL_DOWN | GPIO_INPUT));
 
+    /* 
+     *  Check whether caliper is currently ON. 
+     */
+    caliper_power_on_test();
+
 #if 0
     /*
      *  optional: Initialize debug pin: output to logic analyzer
      */
     gpio_pin_configure_dt(&debug_spec, (GPIO_PULL_DOWN | GPIO_OUTPUT));
 #endif
-
-    caliper_power_state = CALIPER_POWER_ON;
 }

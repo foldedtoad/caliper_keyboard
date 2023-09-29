@@ -15,6 +15,7 @@
 #include "events.h"
 #include "app_uicr.h"
 #include "ble_base.h"
+#include "battery.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(events, LOG_LEVEL_INF);
@@ -95,6 +96,9 @@ static void events_ble_connect(bool connected)
 {
     LOG_INF("%s: connected(%s)", __func__, 
             (connected == true) ? "true" : "false");
+
+    battery_ble_events(connected);
+
 }
 
 /*---------------------------------------------------------------------------*/

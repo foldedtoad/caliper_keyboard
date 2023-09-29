@@ -245,6 +245,19 @@ static void battery_lvl_read_fn(struct k_work * work)
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
+void battery_ble_events(bool connected)
+{
+    if (connected) {
+        battery_start();
+    }
+    else {
+        battery_stop();
+    }
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
 void battery_init(void)
 {
     int err = 0;
@@ -259,26 +272,3 @@ void battery_init(void)
 
     k_work_init_delayable(&battery_lvl_read, battery_lvl_read_fn);
 }
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*---------------------------------------------------------------------------*/
-void battery_thread(void * id, void * unused1, void * unused2)
-{
-    while (1) {
-        if (is_bt_connected()) {
-            battery_start();
-        }
-        else {
-            battery_stop();
-        }
-        k_sleep(K_SECONDS(10));
-    }        
-}
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*---------------------------------------------------------------------------*/
-
-K_THREAD_DEFINE(battery_id, STACKSIZE, battery_thread,
-                NULL, NULL, NULL, PRIORITY, 0, 0);

@@ -10,5 +10,6 @@
 int  battery_init(void);
 void battery_start(void);
 void battery_stop(void);
+void battery_ble_events(bool connected);
 
 #endif  /* __BATTERY_H */

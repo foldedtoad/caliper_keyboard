@@ -24,5 +24,6 @@
 void caliper_init(void);
 bool is_caliper_on(void);
 int  caliper_read_value(short * value, int * standard);
+void caliper_power_on_test(void);
 
 #endif  /* __CALIPER_H */
