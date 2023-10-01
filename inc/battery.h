@@ -4,6 +4,9 @@
 #ifndef __BATTERY_H
 #define __BATTERY_H
 
+/* Set invalid (uninitialized) percentage value to something very low */
+#define BATTERY_LEVEL_INVALID ((uint8_t)5)
+
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/

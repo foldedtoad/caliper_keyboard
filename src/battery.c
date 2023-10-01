@@ -16,8 +16,9 @@
 #include <zephyr/dt-bindings/adc/nrf-adc.h>
 #include <zephyr/bluetooth/services/bas.h>  
 
-#include "ble_base.h"
+#include "battery.h"
 #include "battery_def.h"
+#include "ble_base.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(battery, 3);
@@ -132,6 +133,8 @@ void battery_stop(void)
     LOG_INF("%s", __func__);
     k_work_cancel_delayable(&battery_lvl_read);
     atomic_set(&active, 0);
+
+    bt_bas_set_battery_level(BATTERY_LEVEL_INVALID);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -258,17 +261,23 @@ void battery_ble_events(bool connected)
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-void battery_init(void)
+int battery_init(void)
 {
     int err = 0;
 
-    LOG_INF("%s", __func__);;
+    LOG_INF("%s", __func__);
 
     err = init_adc();
     if (err) {
         LOG_ERR("ADC init failed");
-        return;
+        return err;
     }
 
+    bt_bas_set_battery_level(BATTERY_LEVEL_INVALID);
+
     k_work_init_delayable(&battery_lvl_read, battery_lvl_read_fn);
+
+    LOG_INF("%s exit", __func__);
+
+    return 0;
 }

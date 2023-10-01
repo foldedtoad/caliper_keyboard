@@ -87,13 +87,13 @@ void main_thread(void * id, void * unused1, void * unused2)
 
     ble_base_init();
 
+    battery_init();
+
     caliper_init();
 
     events_init();
 
     caliper_shell_init();
-
-    battery_init();
 
     watchdog_init();
 
