@@ -39,7 +39,7 @@ static void caliperBackend(void * unused);
 
 #define CALIPER_THREAD_STACK_SIZE  1024
 // Cooperative thread priority 
-#define CALIPER_THREAD_PRIORITY    -5
+#define CALIPER_THREAD_PRIORITY    5
 
 K_THREAD_DEFINE(caliper_thread, 
                 CALIPER_THREAD_STACK_SIZE, 

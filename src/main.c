@@ -95,11 +95,7 @@ void main_thread(void * id, void * unused1, void * unused2)
 
     caliper_shell_init();
 
-    watchdog_init();
-
-    while (1) {
-        k_sleep(K_SECONDS(60));
-    }
+    watchdog_init();   /* watchdog_init never returns */
 }
 
 
