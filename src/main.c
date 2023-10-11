@@ -10,7 +10,9 @@
 #include "events.h"
 #include "watchdog.h"
 #include "shell.h"
+#include "battery.h"
 #include "app_uicr.h"
+#include "ble_base.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(main, 3);
@@ -82,6 +84,10 @@ void main_thread(void * id, void * unused1, void * unused2)
     app_uicr_init();
 
     buttons_init();
+
+    ble_base_init();
+
+    battery_init();
 
     caliper_init();
 

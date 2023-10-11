@@ -305,6 +305,7 @@ void caliper_init(void)
      */
     gpio_pin_configure_dt(&data_spec, (GPIO_PULL_DOWN | GPIO_INPUT));
 
+
 #if 0
     /*
      *  optional: Initialize debug pin: output to logic analyzer

@@ -60,6 +60,10 @@
 	};
 };
 
+&adc {
+	status = "okay";
+};
+
 &gpiote {
 	status = "okay";
 };
@@ -93,9 +97,9 @@
 };
 
 &uart0 {
-	compatible = "nordic,nrf-uart";
-	current-speed = <115200>;
+	compatible = "nordic,nrf-uarte";
 	status = "okay";
+	current-speed = <115200>;
 	pinctrl-0 = <&uart0_default>;
 	pinctrl-1 = <&uart0_sleep>;
 	pinctrl-names = "default", "sleep";
@@ -137,7 +141,7 @@
 	};
 };
 
-&usbd {
+zephyr_udc0: &usbd {
 	compatible = "nordic,nrf-usbd";
 	status = "okay";
 };

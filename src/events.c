@@ -14,6 +14,8 @@
 
 #include "events.h"
 #include "app_uicr.h"
+#include "ble_base.h"
+#include "battery.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(events, LOG_LEVEL_INF);
@@ -90,6 +92,18 @@ static void events_snapshot(buttons_id_t btn_id)
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
+static void events_ble_connect(bool connected)
+{
+    LOG_INF("%s: connected(%s)", __func__, 
+            (connected == true) ? "true" : "false");
+
+    battery_ble_events(connected);
+
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
 void events_init(void)
 {
     LOG_INF("%s", __func__);
@@ -98,4 +112,9 @@ void events_init(void)
      *  Register for button press notifications.
      */
     buttons_register_notify_handler(events_snapshot);
+
+    /*
+     *  Register for BLE connect/disconnect events.
+     */
+    ble_register_connect_handler(events_ble_connect);
 }
