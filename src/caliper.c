@@ -14,6 +14,7 @@
 #include "caliper_gpio.h"
 #include "keyboard.h"
 #include "buttons.h"
+#include "framer.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(caliper, LOG_LEVEL_INF);
@@ -118,6 +119,7 @@ static void caliperBackend(void * unused)
 
         /*
          *  Save initial data value caused by interrupt
+         *  Note: It takes ~9 msecs to read whole frame.
          */
         if (caliperRead(&data_spec) == 0) {
             current_value |= 1 << i;
@@ -305,7 +307,6 @@ void caliper_init(void)
      */
     gpio_pin_configure_dt(&data_spec, (GPIO_PULL_DOWN | GPIO_INPUT));
 
-
 #if 0
     /*
      *  optional: Initialize debug pin: output to logic analyzer
@@ -314,4 +315,10 @@ void caliper_init(void)
 #endif
 
     caliper_power_state = CALIPER_POWER_ON;
+
+    /*
+     *  Initialize framer
+     */
+    void framer_init(void);
+
 }
