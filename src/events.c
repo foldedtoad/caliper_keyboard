@@ -24,7 +24,7 @@ LOG_MODULE_REGISTER(events, LOG_LEVEL_INF);
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
 
-static char string[24];
+static char string[16];
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -34,6 +34,8 @@ static void events_build_string(short value, int standard)
     float value_float = ((float) value);
     char * line_end;
 
+    memset(&string, 0, sizeof(string));
+
     if (standard == CALIPER_STANDARD_MM)
         value_float /= 100.0;
     else
@@ -42,17 +44,23 @@ static void events_build_string(short value, int standard)
     snprintf(string, sizeof(string), "%.2f", value_float);
 
     if (app_uicr_get_standard() == INCLUDE) {
-        strncat(string,
-                 (standard == CALIPER_STANDARD_MM) ? " mm" : " inch",
-                    sizeof(string) - strlen(string));
+        switch (standard) {
+            default:
+            case CALIPER_STANDARD_MM:
+                strncat(string, " mm", sizeof(" mm")-1);
+                break;
+            case CALIPER_STANDARD_INCH:
+                strncat(string, " inch", sizeof(" inch")-1);             
+                break;
+        }
     }
 
     switch (app_uicr_get_line_end()) { 
         default:
-        case ASCIIZ:  line_end = "";      break;
-        case NEWLINE: line_end = "\n";    break;
+        case ASCIIZ:  line_end = "";    break;
+        case NEWLINE: line_end = "\n";  break;
     }
-    strncat(string, line_end, sizeof(string) - strlen(string));
+    strncat(string, line_end, strlen(line_end));
 
     LOG_INF("string: %s", string);
 }
