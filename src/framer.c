@@ -33,19 +33,21 @@ LOG_MODULE_REGISTER(framer, LOG_LEVEL_INF);
 static const struct gpio_dt_spec clock_spec = 
                         GPIO_DT_SPEC_GET_OR(CLOCK_NODE, gpios, 0);
 
-#if 1
+#if logic_analyzer_testing
 static const struct gpio_dt_spec debug_spec = 
-                        GPIO_DT_SPEC_GET_OR(DEBUG_NODE, gpios, 0});
+                        GPIO_DT_SPEC_GET_OR(DEBUG_NODE, gpios, 0);
 #endif
 
-void framerInactiveCallback(struct k_timer * timer);
-void framerInterframeCallback(struct k_timer * timer);
+void framerActiveCallback(struct k_timer * timer);
+void framerAlignmentCallback(struct k_timer * timer);
 
-K_TIMER_DEFINE(framer_inactive_timer,  framerInactiveCallback,   NULL);
-K_TIMER_DEFINE(framer_interframe_timer, framerInterframeCallback, NULL);
+K_TIMER_DEFINE(framer_active_timer,    framerActiveCallback,    NULL);
+K_TIMER_DEFINE(framer_alignment_timer, framerAlignmentCallback, NULL);
 
-static bool inactive = false;
-static bool running = false;
+static bool active = false;
+static bool aligned = false;
+
+static bool caliper_power_state = CALIPER_POWER_OFF;
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -58,56 +60,140 @@ static int framerRead(const struct gpio_dt_spec * spec)
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-void framerInactiveCallback(struct k_timer * timer)
+static void framerWrite(const struct gpio_dt_spec * spec, int val)
+{
+    gpio_pin_set_dt(spec, val);
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+bool is_caliper_on(void)
+{
+    LOG_INF("%s: %s", __func__, 
+           (caliper_power_state == CALIPER_POWER_ON) ? "ON" : "OFF");
+
+    return caliper_power_state;
+}
+
+#if logic_analyzer_testing
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+void framerPulseDebug(void)
+{
+    framerWrite(&debug_spec, 0);
+    framerWrite(&debug_spec, 1);  // toggle debug line
+    framerWrite(&debug_spec, 0);
+}
+#endif
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+void framerActiveCallback(struct k_timer * timer)
 {
     LOG_INF("Caliper is \"OFF\"");
 
-    running  = false;
-    inactive = true;
+    active = false;
+    caliper_power_state = CALIPER_POWER_OFF;
 
-    k_timer_stop(&framer_inactive_timer);
+    k_timer_stop(&framer_active_timer);
+    k_timer_stop(&framer_alignment_timer);
+
+#if logic_analyzer_testing
+    framerPulseDebug();
+    framerPulseDebug();
+    framerPulseDebug();
+#endif    
 }
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-void framerInterframeCallback(struct k_timer * timer)
+void framerAlignmentCallback(struct k_timer * timer)
 {
-    LOG_INF("%s", __func__);
+    LOG_DBG("%s", __func__);
 
-    k_timer_stop(&framer_interframe_timer);
+    aligned = false;
+
+    k_timer_stop(&framer_alignment_timer);
 }
 
 /*---------------------------------------------------------------------------*/
-/*                                                                           */
+/* NOTE: this function runs on workqueue thread, not interrupt level         */
 /*---------------------------------------------------------------------------*/
-int framer_find_interframe_gap(void)
+void framer_find_interframe_gap(void)
 {
-    LOG_INF("%s", __func__);
+    int i;
 
-    running = true;
-    inactive = false;
+    LOG_DBG("%s", __func__);
 
-    k_timer_start(&framer_interframe_timer, K_MSEC(500), K_NO_WAIT);
+    active  = true;
+    aligned = true;
 
-    while (running) {
+#if logic_analyzer_testing
+    framerPulseDebug();  // indicate start of search
+#endif
 
-        k_timer_start(&framer_interframe_timer, K_MSEC(100), K_NO_WAIT);
+    /*
+     *  Start active_timer to catch caliper Powered-Off state.
+     */
+    k_timer_start(&framer_active_timer, K_MSEC(500), K_NO_WAIT);
 
-        for (int i=1; i < (FRAMER_FRAME_TOTAL_BITS); i++) {
-            while (framerRead(&clock_spec) == LOW)  { /*spin*/}
-            while (framerRead(&clock_spec) == HIGH) { /*spin*/}        
+    while (active) {
+
+        k_timer_start(&framer_alignment_timer, K_MSEC(30), K_NO_WAIT);
+
+        for (i=0; i < (FRAMER_FRAME_TOTAL_BITS); i++) {
+            while (active && aligned && framerRead(&clock_spec) == LOW)  { /*spin*/}
+            while (active && aligned && framerRead(&clock_spec) == HIGH) { /*spin*/}
         }
-        
-        k_timer_stop(&framer_inactive_timer);
-        
-        return 1;  // successfully found interframe
+        /*
+         *  If framerActiveCallback has set active = false,
+         *  which indicates the caliper is not powered on, then return.
+         */
+        if (!active) {
+            return;
+        }
+
+        /*
+         *  If started in middle of frame, e.g. misaligned, then
+         *  delay a bit (20ms) and keep searching.
+         */
+        if (!aligned) {
+            k_sleep(K_MSEC(20));
+            aligned = true;
+            continue;
+        }
+
+        if (i == FRAMER_FRAME_TOTAL_BITS) {
+             /*
+              *  Wait for clock to finally go high: it's interframe value.
+              */
+            while (framerRead(&clock_spec) == LOW)  { /*spin*/}
+
+            caliper_power_state = CALIPER_POWER_ON;
+
+            /*
+             *  Delay to expected start of next frame.
+             *  Interframe gap is 120ms, but use a bit less that this.
+             */
+            k_sleep(K_MSEC(110));
+
+#if logic_analyzer_testing             
+            framerPulseDebug();  // indicate near start of next frame.
+#endif
+            /*
+             *  Insure all timers are stopped.
+             */
+            k_timer_stop(&framer_active_timer);
+            k_timer_stop(&framer_alignment_timer);
+
+            LOG_DBG("Found interframe gap");
+            return;
+        }
     }
-
-    if (inactive)
-        return -1;  // caliper is powered off.
-
-    return 0;       // ????
 }
 
 
@@ -118,11 +204,13 @@ void framer_init(void)
 {
     LOG_INF("%s", __func__);
 
-#if 1
+    (void) framerRead;
+    (void) framerWrite;
+
+#if logic_analyzer_testing
     /*
      *  optional: Initialize debug pin: output to logic analyzer
      */
     gpio_pin_configure_dt(&debug_spec, (GPIO_PULL_DOWN | GPIO_OUTPUT));
 #endif
 }
-

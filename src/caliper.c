@@ -52,11 +52,6 @@ K_SEM_DEFINE(caliper_gpio_sem, 0, 1);
 
 K_SEM_DEFINE(caliper_read_done_sem, 0, 1);
 
-void caliper_inactive_callback(struct k_timer * timer);
-
-K_TIMER_DEFINE(caliper_inactive_timer, caliper_inactive_callback, NULL);
-
-
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
@@ -188,12 +183,7 @@ static void caliperBackend(void * unused)
 /*---------------------------------------------------------------------------*/
 int caliper_read_value(short * value, int * standard)
 {
-    LOG_DBG("%s ", __func__);
-
-    /*
-     *  Start inactive timer to determine if calipers are powered off.
-     */
-    k_timer_start(&caliper_inactive_timer, K_MSEC(500), K_NO_WAIT);
+    LOG_INF("%s ", __func__);
 
     /* 
      *  Set interrupts on falling edge (HIGH --> LOW)
@@ -214,29 +204,6 @@ int caliper_read_value(short * value, int * standard)
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-bool is_caliper_on(void)
-{
-    LOG_DBG("%s: %s", __func__, 
-           (caliper_power_state == CALIPER_POWER_ON) ? "ON" : "OFF");
-
-    return caliper_power_state;
-}
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*---------------------------------------------------------------------------*/
-void caliper_inactive_callback(struct k_timer * timer)
-{
-    LOG_INF("Caliper is \"OFF\"");
-
-    caliper_power_state = CALIPER_POWER_OFF;
-
-    k_timer_stop(&caliper_inactive_timer);
-}
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*---------------------------------------------------------------------------*/
 void caliperInterrupt(const struct device * dev, 
                       struct gpio_callback * cb,
                       uint32_t bitarray)
@@ -246,8 +213,6 @@ void caliperInterrupt(const struct device * dev,
          *  Disable interrupts, then signal backend thread to do work.
          */
         gpio_pin_interrupt_configure_dt(&clock_spec, GPIO_INT_DISABLE);
-
-        k_timer_stop(&caliper_inactive_timer);
 
         k_sem_give(&caliper_gpio_sem);
     }
@@ -315,10 +280,4 @@ void caliper_init(void)
 #endif
 
     caliper_power_state = CALIPER_POWER_ON;
-
-    /*
-     *  Initialize framer
-     */
-    void framer_init(void);
-
 }
