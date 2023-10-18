@@ -29,7 +29,7 @@ static char string[16];
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-static void events_build_string(short value, int standard)
+void events_build_string(short value, int standard)
 {
     float value_float = ((float) value);
     char * line_end;
@@ -76,25 +76,38 @@ static void events_snapshot(buttons_id_t btn_id)
 
     LOG_INF("%s: Snapshot", __func__);
 
+    /*
+     *  Search for start of next frame.
+     */
+    framer_find_interframe_gap();
+
+    /*
+     *  Caliper must be powered on and a BLE connection established.
+     */
     if (is_caliper_on() == CALIPER_POWER_OFF) {
         LOG_WRN("Caliper is off");
         return;
     }
-
     if (is_bt_connected() == false) {
-        LOG_ERR("BLE not connected");
+        LOG_WRN("Bluetooth not connected");
         return;
     }
 
+    /*
+     *  Prerequisites are good, so read value.
+     */
     ret = caliper_read_value(&value, &standard);
     if (ret != 0) {
         LOG_ERR("Read failed");
         return;
     }
 
+    /*
+     *  Build string from returned values and send it as HOG input.
+     */
     events_build_string(value, standard);
 
-    keyboard_send_string((char*)&string);   
+    keyboard_send_string((char*)&string);
 }
 
 /*---------------------------------------------------------------------------*/

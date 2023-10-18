@@ -14,6 +14,7 @@
 
 #include "keyboard.h"
 #include "buttons.h"
+#include "framer.h"
 #include "caliper.h"
 #include "ble_base.h"
 

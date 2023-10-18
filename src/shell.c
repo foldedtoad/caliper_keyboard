@@ -16,6 +16,7 @@
 #include "keyboard.h" 
 #include "app_uicr.h" 
 #include "ble_base.h"
+#include "framer.h"
 #include "caliper.h"
 #include "battery.h"
 
