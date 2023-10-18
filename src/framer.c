@@ -93,7 +93,7 @@ void framerPulseDebug(void)
 /*---------------------------------------------------------------------------*/
 void framerActiveCallback(struct k_timer * timer)
 {
-    LOG_INF("Caliper is \"OFF\"");
+    LOG_DBG("Caliper is \"OFF\"");
 
     active = false;
     caliper_power_state = CALIPER_POWER_OFF;

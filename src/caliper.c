@@ -29,17 +29,11 @@ static const struct gpio_dt_spec clock_spec =
 static const struct gpio_dt_spec data_spec = 
                         GPIO_DT_SPEC_GET_OR(DATA_NODE, gpios, 0);
 
-#if 0
-static const struct gpio_dt_spec debug_spec = 
-                        GPIO_DT_SPEC_GET_OR(DEBUG_NODE, gpios, 0});
-#endif
-
 static struct gpio_callback clock_irq_cb_data;
 
 static void caliperBackend(void * unused);
 
 #define CALIPER_THREAD_STACK_SIZE  1024
-// Cooperative thread priority 
 #define CALIPER_THREAD_PRIORITY    5
 
 K_THREAD_DEFINE(caliper_thread, 
@@ -64,8 +58,6 @@ K_SEM_DEFINE(caliper_read_done_sem, 0, 1);
 
 #define HIGH        1
 #define LOW         0
-
-static bool caliper_power_state = CALIPER_POWER_OFF;
 
 static int   current_frame;
 static short current_value;
@@ -109,8 +101,6 @@ static void caliperBackend(void * unused)
         current_frame = 0;
         current_value = 0;
         current_standard = 0;
-
-        caliper_power_state = CALIPER_POWER_ON;
 
         /*
          *  Save initial data value caused by interrupt
@@ -271,13 +261,4 @@ void caliper_init(void)
      *  Initialize DATA pin
      */
     gpio_pin_configure_dt(&data_spec, (GPIO_PULL_DOWN | GPIO_INPUT));
-
-#if 0
-    /*
-     *  optional: Initialize debug pin: output to logic analyzer
-     */
-    gpio_pin_configure_dt(&debug_spec, (GPIO_PULL_DOWN | GPIO_OUTPUT));
-#endif
-
-    caliper_power_state = CALIPER_POWER_ON;
 }
