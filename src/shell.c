@@ -42,6 +42,8 @@ static int cmd_shell_info(const struct shell *sh, size_t argc, char *argv[])
     char * standard;
     int8_t level;
 
+    framer_find_interframe_gap();
+
     switch (app_uicr_get_line_end()) { 
         case ASCIIZ:  line_end = "ASCIIZ";    break;
         case NEWLINE: line_end = "NEWLINE";   break;
