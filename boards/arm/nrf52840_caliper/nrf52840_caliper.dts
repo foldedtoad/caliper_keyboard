@@ -41,22 +41,35 @@
             gpios = <&gpio0 28 0>;
             label = "DEBUG";
         };
-    };
+    };  
 
-    buzzer {
-        compatible = "calipers";
-        buzzer0: buzzer_0 {
-            gpios = <&gpio0 28 0>;
-            label = "BUZZER";
-        };
-    };
+	pwm_buzzer: pwm_buzzer {
+		compatible = "pwm-buzzer";
+		status = "okay";
+		pwm_buzzer0: pwm_buzzer0 {
+			pwms = <&pwm0 0 PWM_MSEC(20) PWM_POLARITY_INVERTED>;
+		};
+	};
+
+	soc {
+		pwm0: pwm@4001c000 {
+			compatible = "nordic,nrf-pwm";
+			status = "okay";			
+			reg = <0x4001c000 0x1000>;
+			pinctrl-0 = <&pwm0_default>;
+			pinctrl-1 = <&pwm0_sleep>;
+			pinctrl-names = "default", "sleep";
+			interrupts = <28 NRF_DEFAULT_IRQ_PRIORITY>;
+			#pwm-cells = <3>;
+		};
+	};
 
 	aliases {
 		sw0           = &button0;
 		caliper-clock = &caliper_clock;
         caliper-data  = &caliper_data;
-        caliper-debug = &caliper_debug;
 		watchdog0     = &wdt0;
+        //caliper-debug = &caliper_debug;
 	};
 };
 
@@ -94,6 +107,20 @@
             low-power-enable;
         };
     };   
+
+	pwm0_default: pwm0_default {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 0, 28)>;
+			nordic,invert;
+		};
+	};
+	
+	pwm0_sleep: pwm0_sleep {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 0, 28)>;
+			low-power-enable;
+		};
+	};    
 };
 
 &uart0 {

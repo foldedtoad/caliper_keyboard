@@ -21,4 +21,4 @@ target_sources(app PRIVATE
   ${app_sources}
   )
 
-# zephyr_compile_options(-save-temps)
+zephyr_compile_options(-save-temps)
