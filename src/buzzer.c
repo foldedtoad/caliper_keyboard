@@ -23,7 +23,7 @@ LOG_MODULE_REGISTER(buzzer, LOG_LEVEL_INF);
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
 
-static const struct pwm_dt_spec pwm_spec = 
+static const struct pwm_dt_spec buzzer_spec = 
                         PWM_DT_SPEC_GET(DT_NODELABEL(pwm_buzzer0));
 
 /*---------------------------------------------------------------------------*/
@@ -35,6 +35,11 @@ static void buzzer_timeout_callback(struct k_timer *timer);
 K_TIMER_DEFINE(buzzer_timer, buzzer_timeout_callback, NULL);
 
 static bool  in_play = false;
+
+static uint32_t max_period;
+
+#define MIN_PERIOD PWM_SEC(1) / 128U
+#define MAX_PERIOD PWM_SEC(1)
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -158,10 +163,26 @@ void buzzer_stop(void)
 /*---------------------------------------------------------------------------*/
 void buzzer_init(void)
 {
-    if (!device_is_ready(pwm_spec.dev)) {
-        LOG_ERR("PWM device %s is not ready", pwm_spec.dev->name);
+    if (!device_is_ready(buzzer_spec.dev)) {
+        LOG_ERR("PWM device %s is not ready", buzzer_spec.dev->name);
         return;
     }
+
+    LOG_INF("Calibrating pwm channel %d", buzzer_spec.channel);
+
+    max_period = MAX_PERIOD;
+
+    while (pwm_set_dt(&buzzer_spec, max_period, max_period / 2)) {
+        max_period /= 2;
+        if (max_period < (4 * MIN_PERIOD)) {
+            LOG_ERR("Error: PWM device "
+                   "does not support a period at least %lu\n",
+                   4 * MIN_PERIOD);
+            return;
+        }
+    }
+    LOG_INF("Done calibrating; maximum/minimum periods %u/%lu nsec",
+           max_period, MIN_PERIOD);
 
 //    nrf_pwm_set_enabled(false);
 
