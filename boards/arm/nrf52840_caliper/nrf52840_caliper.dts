@@ -8,24 +8,24 @@
 #include <nordic/nrf52840_qiaa.dtsi>
 
 / {
-	model = "nRF52840 CALIPER";
-	compatible = "nordic,nrf52840-dk-nrf52840";
+    model = "nRF52840 CALIPER";
+    compatible = "nordic,nrf52840-dk-nrf52840";
 
-	chosen {
-		zephyr,console = &uart0;
-		zephyr,shell-uart = &uart0;
-		zephyr,sram = &sram0;
-		zephyr,flash = &flash0;
-		zephyr,code-partition = &slot0_partition;
-	};
+    chosen {
+        zephyr,console = &uart0;
+        zephyr,shell-uart = &uart0;
+        zephyr,sram = &sram0;
+        zephyr,flash = &flash0;
+        zephyr,code-partition = &slot0_partition;
+    };
 
-	buttons {
-		compatible = "gpio-keys";
-		button0: button_0 {
-			gpios = <&gpio0 4 (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>;
-			label = "SNAPSHOT";
-		};
-	};
+    buttons {
+        compatible = "gpio-keys";
+        button0: button_0 {
+            gpios = <&gpio0 4 (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>;
+            label = "SNAPSHOT";
+        };
+    };
 
     caliper {
         compatible = "caliper";
@@ -41,31 +41,31 @@
             gpios = <&gpio0 28 0>;
             label = "BUZZER";
         };
-    };  
+    };
 
-	aliases {
-		sw0           = &button0;
-		caliper-clock = &caliper_clock;
-        caliper-data  = &caliper_data;
-		watchdog0     = &wdt0;
-        buzzer        = &caliper_buzzer;
-	};
+    aliases {
+        sw0            = &button0;
+        watchdog0      = &wdt0;
+        caliper-clock  = &caliper_clock;
+        caliper-data   = &caliper_data;
+        caliper-buzzer = &caliper_buzzer;
+    };
 };
 
 &adc {
-	status = "okay";
+    status = "okay";
 };
 
 &gpiote {
-	status = "okay";
+    status = "okay";
 };
 
 &gpio0 {
-	status = "okay";
+    status = "okay";
 };
 
 &gpio1 {
-	status = "okay";
+    status = "okay";
 };
 
 &pinctrl {
@@ -89,53 +89,53 @@
 };
 
 &uart0 {
-	compatible = "nordic,nrf-uarte";
-	status = "okay";
-	current-speed = <115200>;
-	pinctrl-0 = <&uart0_default>;
-	pinctrl-1 = <&uart0_sleep>;
-	pinctrl-names = "default", "sleep";
+    compatible = "nordic,nrf-uarte";
+    status = "okay";
+    current-speed = <115200>;
+    pinctrl-0 = <&uart0_default>;
+    pinctrl-1 = <&uart0_sleep>;
+    pinctrl-names = "default", "sleep";
 };
 
 &flash0 {
 
-	partitions {
-		compatible = "fixed-partitions";
-		#address-cells = <1>;
-		#size-cells = <1>;
+    partitions {
+        compatible = "fixed-partitions";
+        #address-cells = <1>;
+        #size-cells = <1>;
 
-		boot_partition: partition@0 {
-			label = "mcuboot";
-			reg = <0x00000000 0x0000C000>;
-		};
-		slot0_partition: partition@c000 {
-			label = "image-0";
-			reg = <0x0000C000 0x00076000>;
-		};
-		slot1_partition: partition@82000 {
-			label = "image-1";
-			reg = <0x00082000 0x00076000>;
-		};
+        boot_partition: partition@0 {
+            label = "mcuboot";
+            reg = <0x00000000 0x0000C000>;
+        };
+        slot0_partition: partition@c000 {
+            label = "image-0";
+            reg = <0x0000C000 0x00076000>;
+        };
+        slot1_partition: partition@82000 {
+            label = "image-1";
+            reg = <0x00082000 0x00076000>;
+        };
 
-		/*
-		 * The flash starting at 0x000f8000 and ending at
-		 * 0x000fffff is reserved for use by the application.
-		 */
+        /*
+         * The flash starting at 0x000f8000 and ending at
+         * 0x000fffff is reserved for use by the application.
+         */
 
-		/*
-		 * Storage partition will be used by FCB/LittleFS/NVS
-		 * if enabled.
-		 */
-		storage_partition: partition@f8000 {
-			label = "storage";
-			reg = <0x000f8000 0x00008000>;
-		};
-	};
+        /*
+         * Storage partition will be used by FCB/LittleFS/NVS
+         * if enabled.
+         */
+        storage_partition: partition@f8000 {
+            label = "storage";
+            reg = <0x000f8000 0x00008000>;
+        };
+    };
 };
 
 #if 0
 zephyr_udc0: &usbd {
-	compatible = "nordic,nrf-usbd";
-	status = "okay";
+    compatible = "nordic,nrf-usbd";
+    status = "okay";
 };
 #endif

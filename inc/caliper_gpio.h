@@ -24,10 +24,10 @@
 #define DATA_FLAGS      DT_PHA_BY_IDX(DT_ALIAS(caliper_data), gpios, 0, flags)
 #define DATA_LABEL      DT_PROP(DT_ALIAS(caliper_data), label)
 
-#define BUZZER_NODE     DT_ALIAS(buzzer)
-#define BUZZER          DT_GPIO_PIN(DT_ALIAS(buzzer), gpios)
-#define BUZZER_PORT     DT_LABEL(DT_PHANDLE_BY_IDX(DT_ALIAS(buzzer), gpios, 0))
-#define BUZZER_FLAGS    DT_PHA_BY_IDX(DT_ALIAS(buzzer), gpios, 0, flags)
-#define BUZZER_LABEL    DT_PROP(DT_ALIAS(buzzer), label)
+#define BUZZER_NODE     DT_ALIAS(caliper_buzzer)
+#define BUZZER          DT_GPIO_PIN(DT_ALIAS(caliper_buzzer), gpios)
+#define BUZZER_PORT     DT_LABEL(DT_PHANDLE_BY_IDX(DT_ALIAS(caliper_buzzer), gpios, 0))
+#define BUZZER_FLAGS    DT_PHA_BY_IDX(DT_ALIAS(caliper_buzzer), gpios, 0, flags)
+#define BUZZER_LABEL    DT_PROP(DT_ALIAS(caliper_buzzer), label)
 
 #endif  /* __CALIPER_GPIO_H */

@@ -41,9 +41,9 @@ static bool  in_play = false;
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-int buzzer_on(void)
+void buzzer_on(void)
 {
-    return gpio_pin_set_dt(&buzzer_spec, 1);
+    gpio_pin_set_dt(&buzzer_spec, 1);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -61,7 +61,7 @@ static void buzzer_process_playlist(buzzer_play_t * playlist)
 {
     k_timeout_t duration;
 
-    LOG_INF("%s", __func__);
+    LOG_DBG("%s", __func__);
 
     buzzer_off();
 
@@ -82,6 +82,7 @@ static void buzzer_process_playlist(buzzer_play_t * playlist)
             buzzer_timer.user_data = &playlist[1];
             duration = K_MSEC(playlist->duration);
             k_timer_start(&buzzer_timer, duration, K_NO_WAIT);
+            LOG_INF("PLAY:  duration(%d)", playlist->duration);
             break;
 
         case BUZZER_PLAY_QUIET:
@@ -89,6 +90,7 @@ static void buzzer_process_playlist(buzzer_play_t * playlist)
             buzzer_timer.user_data = &playlist[1];
             duration = K_MSEC(playlist->duration);
             k_timer_start(&buzzer_timer, duration, K_NO_WAIT);
+            LOG_INF("QUIET: duration(%d)", playlist->duration);
             break;
 
         case BUZZER_PLAY_DONE:
@@ -172,9 +174,7 @@ void buzzer_init(void)
 
     LOG_INF("buzzer port '%s', pin %d", buzzer_spec.port->name, buzzer_spec.pin);
 
-    gpio_pin_configure_dt(&buzzer_spec, (GPIO_PULL_DOWN | GPIO_INPUT));
+    gpio_pin_configure_dt(&buzzer_spec, (GPIO_PULL_DOWN | GPIO_OUTPUT));
 
     buzzer_play(&startup_sound);
-
-    buzzer_off(); 
 }
