@@ -35,7 +35,7 @@ static const struct gpio_dt_spec clock_spec =
 
 #if logic_analyzer_testing
 static const struct gpio_dt_spec debug_spec = 
-                        GPIO_DT_SPEC_GET_OR(DEBUG_NODE, gpios, 0);
+                        GPIO_DT_SPEC_GET_OR(BUZZER_NODE, gpios, 0);
 #endif
 
 void framerActiveCallback(struct k_timer * timer);
@@ -176,10 +176,11 @@ void framer_find_interframe_gap(void)
             caliper_power_state = CALIPER_POWER_ON;
 
             /*
-             *  Delay to expected start of next frame.
-             *  Interframe gap is 120ms, but use a bit less that this.
+             *  Delay a bit to insure truly in interframe gap.
+             *  The next frame will be detected by enabling interrupts 
+             *  on clock line.  see caliper_read_value().
              */
-            k_sleep(K_MSEC(110));
+            k_sleep(K_MSEC(20));
 
 #if logic_analyzer_testing             
             framerPulseDebug();  // indicate near start of next frame.

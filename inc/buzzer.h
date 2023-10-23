@@ -8,6 +8,8 @@
 #ifndef __BUZZER_H__
 #define __BUZZER_H__
 
+#include <zephyr/kernel.h>
+
 typedef enum {
     BUZZER_PLAY_DONE = 0,
     BUZZER_PLAY_TONE,
@@ -16,7 +18,7 @@ typedef enum {
 
 typedef struct {
     buzzer_play_action_t  action;    // see enum above
-    uint16_t              duration;  // in milliseconds
+    int                   duration;  // in milliseconds
 } buzzer_play_t;
 
 /* Duratiion is in milliseconds */
