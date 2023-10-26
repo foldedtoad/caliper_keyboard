@@ -11,8 +11,6 @@ set(DTS_ROOT_BINDINGS "${CMAKE_CURRENT_SOURCE_DIR}")
 #set(BOARD nrf52840dk_nrf52840)
 set(BOARD nrf52840_caliper)
 
-set(BUZZER 1)
-
 find_package(Zephyr)
 project(caliper)
 
@@ -23,4 +21,4 @@ target_sources(app PRIVATE
   ${app_sources}
   )
 
-zephyr_compile_options(-save-temps)
+# zephyr_compile_options(-save-temps)

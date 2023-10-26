@@ -82,7 +82,6 @@ static void buzzer_process_playlist(buzzer_play_t * playlist)
             buzzer_timer.user_data = &playlist[1];
             duration = K_MSEC(playlist->duration);
             k_timer_start(&buzzer_timer, duration, K_NO_WAIT);
-            LOG_INF("PLAY:  duration(%d)", playlist->duration);
             break;
 
         case BUZZER_PLAY_QUIET:
@@ -90,7 +89,6 @@ static void buzzer_process_playlist(buzzer_play_t * playlist)
             buzzer_timer.user_data = &playlist[1];
             duration = K_MSEC(playlist->duration);
             k_timer_start(&buzzer_timer, duration, K_NO_WAIT);
-            LOG_INF("QUIET: duration(%d)", playlist->duration);
             break;
 
         case BUZZER_PLAY_DONE:
