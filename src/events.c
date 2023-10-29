@@ -16,6 +16,7 @@
 #include "app_uicr.h"
 #include "ble_base.h"
 #include "battery.h"
+#include "tones.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(events, LOG_LEVEL_INF);
@@ -86,10 +87,12 @@ static void events_snapshot(buttons_id_t btn_id)
      */
     if (is_caliper_on() == CALIPER_POWER_OFF) {
         LOG_WRN("Caliper is off");
+        buzzer_play(&caliper_off_sound);
         return;
     }
     if (is_bt_connected() == false) {
         LOG_WRN("Bluetooth not connected");
+        buzzer_play(&ble_not_connected_sound);
         return;
     }
 

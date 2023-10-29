@@ -24,15 +24,20 @@ buzzer_play_t startup_sound [] = {
     {.action = BUZZER_PLAY_DONE,  .duration=0},     // stop
 };
 
-buzzer_play_t simple_beep_sound [] = {
-    {.action = BUZZER_PLAY_TONE,  .duration=200},   // short buzz   200ms
-    {.action = BUZZER_PLAY_DONE,  .duration=0},     // stop
+buzzer_play_t caliper_off_sound [] = {
+    {.action = BUZZER_PLAY_TONE,  .duration=500},  // long buzz   500ms
+    {.action = BUZZER_PLAY_QUIET, .duration=200},  // short quiet
+    {.action = BUZZER_PLAY_TONE,  .duration=1000}, // long buzz   1000ms        
+    {.action = BUZZER_PLAY_DONE,  .duration=0},    // stop
 };
 
-
-buzzer_play_t end_of_cycle_sound [] = {
-    {.action = BUZZER_PLAY_TONE,  .duration=1000},  // long buzz   1s
-    {.action = BUZZER_PLAY_DONE,  .duration=0},     // stop
+buzzer_play_t ble_not_connected_sound [] = {
+    {.action = BUZZER_PLAY_TONE,  .duration=500},  // long buzz   500ms
+    {.action = BUZZER_PLAY_QUIET, .duration=200},  // short quiet
+    {.action = BUZZER_PLAY_TONE,  .duration=500},  // long buzz   500ms
+    {.action = BUZZER_PLAY_QUIET, .duration=200},  // short quiet
+    {.action = BUZZER_PLAY_TONE,  .duration=1000}, // long buzz   1000ms     
+    {.action = BUZZER_PLAY_DONE,  .duration=0},    // stop
 };
 
 buzzer_play_t error_sound [] = {
@@ -47,20 +52,6 @@ buzzer_play_t error_sound [] = {
     {.action = BUZZER_PLAY_TONE,  .duration=200},   // short buzz
     {.action = BUZZER_PLAY_QUIET, .duration=200},   // short quiet
     {.action = BUZZER_PLAY_TONE,  .duration=200},   // short buzz
-    {.action = BUZZER_PLAY_QUIET, .duration=200},   // short quiet
-    {.action = BUZZER_PLAY_TONE,  .duration=200},   // short buzz
-    {.action = BUZZER_PLAY_QUIET, .duration=200},   // short quiet
-    {.action = BUZZER_PLAY_TONE,  .duration=200},   // short buzz
-    {.action = BUZZER_PLAY_QUIET, .duration=200},   // short quiet
-    {.action = BUZZER_PLAY_TONE,  .duration=200},   // short buzz
-    {.action = BUZZER_PLAY_QUIET, .duration=200},   // short quiet
-    {.action = BUZZER_PLAY_TONE,  .duration=200},   // short buzz
-    {.action = BUZZER_PLAY_QUIET, .duration=200},   // short quiet
-    {.action = BUZZER_PLAY_DONE,  .duration=0},     // stop
-};
-
-buzzer_play_t find_me_sound [] = {
-    {.action = BUZZER_PLAY_TONE,  .duration=200},   // short buzz   200ms
     {.action = BUZZER_PLAY_QUIET, .duration=200},   // short quiet
     {.action = BUZZER_PLAY_TONE,  .duration=200},   // short buzz
     {.action = BUZZER_PLAY_QUIET, .duration=200},   // short quiet

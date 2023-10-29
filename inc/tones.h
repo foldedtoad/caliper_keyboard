@@ -15,9 +15,8 @@
 /*---------------------------------------------------------------------------*/
 
 extern buzzer_play_t startup_sound;
-extern buzzer_play_t simple_beep_sound;
-extern buzzer_play_t end_of_cycle_sound;
+extern buzzer_play_t caliper_off_sound;
+extern buzzer_play_t ble_not_connected_sound;
 extern buzzer_play_t error_sound;
-extern buzzer_play_t find_me_sound;
 
 #endif /* __TONES_H__ */
