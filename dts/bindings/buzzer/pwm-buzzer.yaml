@@ -1,0 +1,18 @@
+# Copyright (c) 2023  Callender_Consulting
+# SPDX-License-Identifier: Apache-2.0
+
+description: PWM Buzzer parent node
+
+compatible: "pwm-buzzer"
+
+child-binding:
+  description: PWM Buzzer child node
+  properties:
+    pwms:
+      required: true
+      type: phandle-array
+
+    label:
+      type: string
+      description: |
+        Human readable string describing the Buzzer. 
