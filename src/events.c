@@ -75,6 +75,8 @@ static void events_snapshot(buttons_id_t btn_id)
     short value;
     int   standard;
 
+    (void) btn_id;   // unused
+
     LOG_INF("%s: Snapshot", __func__);
 
     /*

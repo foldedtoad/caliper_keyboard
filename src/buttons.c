@@ -123,6 +123,16 @@ void buttons_unregister_notify_handler(void)
 }
 
 /*---------------------------------------------------------------------------*/
+/*  Trigger remote button event -- driven by shell "snap" cmd.               */
+/*---------------------------------------------------------------------------*/
+void buttons_remote_button(void)
+{
+    if (buttons.notify) {
+        buttons.notify(0);   // NOTE: passed value is ignored.
+    }
+}
+
+/*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
 void buttons_init(void)

@@ -19,6 +19,7 @@
 #include "framer.h"
 #include "caliper.h"
 #include "battery.h"
+#include "buttons.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app_shell, LOG_LEVEL_INF);
@@ -71,6 +72,21 @@ static int cmd_shell_info(const struct shell *sh, size_t argc, char *argv[])
     shell_print(sh, "** Parameters --");
     shell_print(sh, "**   [line_end] %s", line_end);
     shell_print(sh, "**   [standard] %s", standard);
+
+    return 0;
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+static int cmd_shell_snap(const struct shell *sh, size_t argc, char *argv[])
+{
+    ARG_UNUSED(argc);
+    ARG_UNUSED(argv);
+
+    buttons_remote_button();
+
+    shell_print(sh, "snap!");
 
     return 0;
 }
@@ -144,6 +160,7 @@ SHELL_STATIC_SUBCMD_SET_CREATE(caliper_cmds,
     SHELL_CMD(line_end, NULL, "caliper line_end (toggle)", cmd_shell_line_end),
     SHELL_CMD(standard, NULL, "caliper standard (toggle)", cmd_shell_standard),
     SHELL_CMD(info,     NULL, "caliper info", cmd_shell_info),
+    SHELL_CMD(snap,     NULL, "caliper snap (snapshot)", cmd_shell_snap),
     SHELL_SUBCMD_SET_END
 );
 
