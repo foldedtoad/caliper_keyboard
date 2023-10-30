@@ -27,6 +27,7 @@
 #include "ascii2hid.h"
 #include "ble_base.h"
 #include "caliper.h"
+#include "tones.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(keyboard, LOG_LEVEL_INF);
@@ -268,18 +269,12 @@ static void notify_callback(struct bt_conn * conn, void * user_data)
 {
     string_desc_t * string_desc = user_data;
 
-#if 0
-    LOG_INF("string_info: %c, %d, %d", 
-             (string_desc->string[string_desc->index] >= 32) ? 
-              string_desc->string[string_desc->index] : '.',
-             string_desc->length,
-             string_desc->index);
-#endif
-
     string_desc->index++;
 
-    if (string_desc->string[string_desc->index] == 0)
+    if (string_desc->string[string_desc->index] == 0) {
+        buzzer_play(&send_completed_sound);
         return;
+    }        
 
     if (string_desc->index <= string_desc->length) {
         keyboard_send_char(string_desc);
@@ -304,12 +299,6 @@ static void keyboard_send_char(string_desc_t * string_desc)
                 string_desc->string[string_desc->index]);
         return;
     }
-
-#if 0
-    LOG_INF("send keycode 0x%02X -- '%c'", keycode, 
-        (string_desc->string[string_desc->index] >= 32) ? 
-            string_desc->string[string_desc->index] : '.');
-#endif
 
     if (needs_shift(string_desc->string[string_desc->index])) {
         report[0] |= HID_KBD_MODIFIER_RIGHT_SHIFT;

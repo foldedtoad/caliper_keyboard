@@ -24,6 +24,11 @@ buzzer_play_t startup_sound [] = {
     {.action = BUZZER_PLAY_DONE,  .duration=0},     // stop
 };
 
+buzzer_play_t send_completed_sound [] = {
+    {.action = BUZZER_PLAY_TONE,  .duration=200},  // long buzz   200ms      
+    {.action = BUZZER_PLAY_DONE,  .duration=0},    // stop
+};
+
 buzzer_play_t caliper_off_sound [] = {
     {.action = BUZZER_PLAY_TONE,  .duration=500},  // long buzz   500ms
     {.action = BUZZER_PLAY_QUIET, .duration=200},  // short quiet

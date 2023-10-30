@@ -15,6 +15,7 @@
 /*---------------------------------------------------------------------------*/
 
 extern buzzer_play_t startup_sound;
+extern buzzer_play_t send_completed_sound;
 extern buzzer_play_t caliper_off_sound;
 extern buzzer_play_t ble_not_connected_sound;
 extern buzzer_play_t error_sound;
