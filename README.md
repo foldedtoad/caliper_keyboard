@@ -1,7 +1,7 @@
 # Caliper Keyboard - Digital Caliper Data Over Bluetooth (HOG)
 
 This poject's goal is to provide a remote interface to the various cheap Digital Calipers.  
-This project's firmware is being developed on Zephyr Version 3.4.99.  
+This project's firmware is being developed on Zephyr Version 3.5.99.  
 
 The Nordic nRF52 series Developemt Kits are the target hardware platform: PCA10056 (nRF52840dk_nrf52840) and a new custom board (**"nrf52840_caliper"**).
 The nordic PCA10056 board was use for early development; there will be new board, nrf52840_caliper, specifically designed to be affixed to the back of a caliper.
