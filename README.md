@@ -1,5 +1,6 @@
 # Caliper Keyboard - Digital Caliper Data Over Bluetooth (HOG)
 
+## Overview
 This poject's goal is to provide a remote interface to the various cheap Digital Calipers.  
 This project's firmware is being developed on Zephyr Version 3.5.99.  
 
@@ -8,6 +9,10 @@ The nordic PCA10056 board was use for early development; there will be new board
 
 Go to this project's [Wiki](https://github.com/foldedtoad/caliper_keyboard/wiki) page for more details.
 
+![here](https://github.com/foldedtoad/caliper_keyboard/blob/master/images/Caliper_board.jpg)
+
+
+## How to Build
 To build, use the following flow.
 1) cd to your caliper_keyboard root directory
 2) run "./configure.sh"
