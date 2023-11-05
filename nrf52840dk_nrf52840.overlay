@@ -18,29 +18,26 @@
     };
 
     caliper {
-        compatible = "caliper";
-        caliper_clock: clock {
-            gpios = <&gpio0 3 0>;
-            label = "CLOCK";
-        };
         caliper_data: data {
-            gpios = <&gpio0 4 0>;
+            gpios = <&gpio0 3 0>;
             label = "DATA";
         };
-        caliper_test: test {
-            gpios = <&gpio0 28 0>;
-            label = "TEST";
+        compatible = "caliper";
+        caliper_clock: clock {
+            gpios = <&gpio0 4 0>;
+            label = "CLOCK";
         };
-    };
-
-    aliases {
-        caliper-clock = &caliper_clock;
-        caliper-data  = &caliper_data;
-        caliper-test  = &caliper_test;
+        caliper_buzzer: buzzer {
+            gpios = <&gpio0 28 0>;
+            label = "BUZZER";
+        };        
     };
 
     aliases {
         watchdog0 = &wdt0;
+        caliper-data   = &caliper_data;
+        caliper-clock  = &caliper_clock;
+        caliper-buzzer = &caliper_buzzer;
     };
 };
 
