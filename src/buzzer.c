@@ -114,7 +114,7 @@ static void buzzer_timeout_callback(struct k_timer * timer)
 /*---------------------------------------------------------------------------*/
 uint32_t buzzer_play(buzzer_play_t * playlist)
 {
-    LOG_INF("%s", __func__);
+    LOG_DBG("%s", __func__);
 
     if (in_play) {
         return -1;
