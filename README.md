@@ -17,11 +17,16 @@ The image below shows size of the  **nrf52840_caliper** board, which is sized to
 
 
 ## How to Build
-To build, use the following flow.
+There are two easy methods to build the firmware.
+
+### CMake Method
+This build method use cmake directly, and doesn't use west or ninja.
 1) cd to your caliper_keyboard root directory
 2) run "./configure.sh"
 3) cd to build directory
 4) make
 
-This build method use cmake directly, and doesn't use west or ninja.
-https://github.com/foldedtoad/caliper_keyboard/blob/master/images/caliper_board_w_case.JPEG
+### West Method
+1) cd to your caliper_keyboard root directory
+2) rm -rf build
+3) west build -b nrf52840_caliper
