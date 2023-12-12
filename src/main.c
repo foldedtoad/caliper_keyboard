@@ -87,7 +87,13 @@ void main_thread(void * id, void * unused1, void * unused2)
 
     buttons_init();
 
-    ble_base_init();
+    if (boot_button_state() == BOOT_OPTIONS_ALTERNATE) {
+        /* Do alternate boot options */
+        LOG_INF("Alternate boot sequence ...");
+    }
+    else {
+        ble_base_init();
+    }
 
     battery_init();
 
