@@ -13,6 +13,7 @@
 #include "battery.h"
 #include "app_uicr.h"
 #include "ble_base.h"
+#include "ble_alt.h"
 #include "framer.h"
 #include "buzzer.h"
 
@@ -89,7 +90,9 @@ void main_thread(void * id, void * unused1, void * unused2)
 
     if (boot_button_state() == BOOT_OPTIONS_ALTERNATE) {
         /* Do alternate boot options */
-        LOG_INF("Alternate boot sequence ...");
+        LOG_INF("Alternate BLE service starting...");
+
+        ble_alt_init();
     }
     else {
         ble_base_init();
