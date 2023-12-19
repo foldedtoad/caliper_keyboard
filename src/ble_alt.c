@@ -190,6 +190,12 @@ int ble_alt_init(void)
         return 0;
     } 
 
+    err = shell_bt_nus_init();
+    if (err) {
+        LOG_ERR("Failed to initialize BT NUS shell (err: %d)", err);
+        return 0;
+    }
+
     err = bt_le_adv_start(BT_LE_ADV_CONN, 
                           advert, ARRAY_SIZE(advert), 
                           scan,   ARRAY_SIZE(scan));

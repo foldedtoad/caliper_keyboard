@@ -47,7 +47,7 @@ static ssize_t on_receive(struct bt_conn *conn,
 
     if (nus_cb.received) {
         nus_cb.received(conn, buf, len);
-}
+    }
     return len;
 }
 
