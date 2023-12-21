@@ -99,13 +99,13 @@ void main_thread(void * id, void * unused1, void * unused2)
     buttons_init();
 
     if (boot_button_state() == BOOT_OPTIONS_ALTERNATE) {
-        /* Do alternate boot options */
         LOG_INF("Alternate BLE service starting...");
         alt_ble_app = true;
 
         ble_alt_init();
     }
     else {
+        LOG_INF("Primary BLE service starting...");        
         ble_base_init();
     }
 

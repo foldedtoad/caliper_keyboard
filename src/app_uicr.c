@@ -26,7 +26,7 @@ LOG_MODULE_REGISTER(uicr, LOG_LEVEL_INF);
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
 
-#define __UNINITIALIZED__ (-1)
+#define __UNINITIALIZED__ (0x000000FF)
 
 #define __LINE_END__    0
 #define __STANDARD__    1

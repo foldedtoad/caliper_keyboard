@@ -103,8 +103,6 @@ static void start_advertising(void)
 {
     int err;
 
-    if (is_alt_running()) return;
-
     err = bt_le_adv_start(advert_param, 
                           advert, ARRAY_SIZE(advert), 
                           scand, ARRAY_SIZE(scand));
@@ -202,12 +200,12 @@ static void security_changed(struct bt_conn *conn, bt_security_t level,
 static bool le_param_req(struct bt_conn *conn, struct bt_le_conn_param *param)
 {
     char addr[BT_ADDR_LE_STR_LEN];
-    
+
     if (is_alt_running()) return false;
 
     bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
-    LOG_INF("LE conn  param req: %s int (0x%04x, 0x%04x) lat %d to %d",
+    LOG_INF("LE conn param req: %s int (0x%04x, 0x%04x) lat %d to %d",
             addr, param->interval_min, param->interval_max, param->latency,
             param->timeout);
 
@@ -246,8 +244,6 @@ BT_CONN_CB_DEFINE(conn_callbacks) = {
 /*---------------------------------------------------------------------------*/
 static void bt_ready(int err)
 {
-    if (is_alt_running()) return;
-
     if (err) {
         LOG_ERR("Bluetooth init failed: %d", err);
         return;
@@ -269,8 +265,6 @@ static void auth_cancel(struct bt_conn *conn)
 {
     char addr[BT_ADDR_LE_STR_LEN];
 
-    if (is_alt_running()) return;
-
     bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
     LOG_WRN("Pairing cancelled: %s", addr);
@@ -282,8 +276,6 @@ static void auth_cancel(struct bt_conn *conn)
 static void auth_pairing_confirm(struct bt_conn *conn)
 {
     char addr[BT_ADDR_LE_STR_LEN];
-
-    if (is_alt_running()) return;
 
     bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
@@ -306,8 +298,6 @@ static struct bt_conn_auth_cb auth_cb_display = {
 /*---------------------------------------------------------------------------*/
 void ble_register_connect_handler(ble_connected_callback_t callback)
 {
-    if (is_alt_running()) return;
-
     ble_connected_callback = callback;
 }
 
@@ -316,8 +306,6 @@ void ble_register_connect_handler(ble_connected_callback_t callback)
 /*---------------------------------------------------------------------------*/
 void ble_unregister_notify_handler(void)
 {
-    if (is_alt_running()) return;    
-
     ble_connected_callback = NULL;
 }
 
@@ -327,8 +315,6 @@ void ble_unregister_notify_handler(void)
 int ble_base_init(void)
 {
     int err;
-
-    if (is_alt_running()) return -1;
 
     LOG_INF("%s", __func__);
 

@@ -10,7 +10,8 @@
 #include <zephyr/shell/shell.h>
 #include <zephyr/drivers/uart.h>
 #include <zephyr/devicetree.h>
-#include <zephyr/bluetooth/services/bas.h> 
+#include <zephyr/sys/reboot.h> 
+#include <zephyr/bluetooth/services/bas.h>
 
 #include "shell.h"
 #include "keyboard.h" 
@@ -94,6 +95,22 @@ static int cmd_shell_snap(const struct shell *sh, size_t argc, char *argv[])
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
+static int cmd_shell_reboot(const struct shell *sh, size_t argc, char *argv[])
+{
+    ARG_UNUSED(argc);
+    ARG_UNUSED(argv);
+
+    shell_print(sh, "reboot!");
+
+    k_sleep(K_SECONDS(2));
+    sys_reboot(SYS_REBOOT_WARM);
+
+    return 0;
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
 static int cmd_shell_line_end(const struct shell *sh, size_t argc, char *argv[])
 {
     ARG_UNUSED(argc);
@@ -161,6 +178,7 @@ SHELL_STATIC_SUBCMD_SET_CREATE(caliper_cmds,
     SHELL_CMD(standard, NULL, "caliper standard (toggle)", cmd_shell_standard),
     SHELL_CMD(info,     NULL, "caliper info", cmd_shell_info),
     SHELL_CMD(snap,     NULL, "caliper snap (snapshot)", cmd_shell_snap),
+    SHELL_CMD(reboot,   NULL, "caliper reboot", cmd_shell_reboot),
     SHELL_SUBCMD_SET_END
 );
 
