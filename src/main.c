@@ -13,6 +13,7 @@
 #include "battery.h"
 #include "app_uicr.h"
 #include "ble_base.h"
+#include "ble_alt.h"
 #include "framer.h"
 #include "buzzer.h"
 
@@ -50,6 +51,8 @@ static reason_t reasons[] = {
 };
 #define REASONS_COUNT (sizeof(reasons)/sizeof(reason_t))
 
+static bool alt_ble_app = false;
+
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
@@ -73,6 +76,14 @@ static char * get_reason_text(uint32_t reset_reason)
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
+bool is_alt_running(void)
+{
+    return alt_ble_app;
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
 void main_thread(void * id, void * unused1, void * unused2)
 {
     uint32_t reset_reason = 0;
@@ -87,7 +98,16 @@ void main_thread(void * id, void * unused1, void * unused2)
 
     buttons_init();
 
-    ble_base_init();
+    if (boot_button_state() == BOOT_OPTIONS_ALTERNATE) {
+        LOG_INF("Alternate BLE service starting...");
+        alt_ble_app = true;
+
+        ble_alt_init();
+    }
+    else {
+        LOG_INF("Primary BLE service starting...");        
+        ble_base_init();
+    }
 
     battery_init();
 

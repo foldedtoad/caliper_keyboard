@@ -22,7 +22,8 @@
 #include <zephyr/bluetooth/services/dis.h> 
 
 #include "ble_base.h"
-#include "keyboard.h" 
+#include "keyboard.h"
+#include "main.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(ble_base, LOG_LEVEL_INF);
@@ -125,6 +126,8 @@ static void connected(struct bt_conn *conn, uint8_t err)
 {
     char addr[BT_ADDR_LE_STR_LEN];
 
+    if (is_alt_running()) return;
+
     bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
     if (err) {
@@ -154,6 +157,8 @@ static void disconnected(struct bt_conn *conn, uint8_t reason)
 {
     char addr[BT_ADDR_LE_STR_LEN];
 
+    if (is_alt_running()) return;
+
     bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
     LOG_INF("Disconnected from %s, reason %d", addr, reason);
@@ -176,6 +181,8 @@ static void security_changed(struct bt_conn *conn, bt_security_t level,
 {
     char addr[BT_ADDR_LE_STR_LEN];
 
+    if (is_alt_running()) return;
+
     bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
     if (!err) {
@@ -194,9 +201,11 @@ static bool le_param_req(struct bt_conn *conn, struct bt_le_conn_param *param)
 {
     char addr[BT_ADDR_LE_STR_LEN];
 
+    if (is_alt_running()) return false;
+
     bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
-    LOG_INF("LE conn  param req: %s int (0x%04x, 0x%04x) lat %d to %d",
+    LOG_INF("LE conn param req: %s int (0x%04x, 0x%04x) lat %d to %d",
             addr, param->interval_min, param->interval_max, param->latency,
             param->timeout);
 
@@ -210,6 +219,8 @@ static void le_param_updated(struct bt_conn *conn, uint16_t interval,
                              uint16_t latency, uint16_t timeout)
 {
     char addr[BT_ADDR_LE_STR_LEN];
+
+    if (is_alt_running()) return;
 
     bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
