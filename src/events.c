@@ -38,20 +38,20 @@ void events_build_string(short value, int standard)
     memset(&string, 0, sizeof(string));
 
     if (standard == CALIPER_STANDARD_MM)
-        value_float /= 100.0;
+        value_float /= 100.0F;
     else
-        value_float /= 1000.0;
+        value_float /= 1000.0F;
 
-    snprintf(string, sizeof(string), "%.2f", value_float);
+    snprintf(string, sizeof(string), "%.2f", (double)value_float);
 
     if (app_uicr_get_standard() == INCLUDE) {
         switch (standard) {
             default:
             case CALIPER_STANDARD_MM:
-                strncat(string, " mm", sizeof(" mm")-1);
+                strncat(string, " mm", sizeof(string)-sizeof(" mm"));
                 break;
             case CALIPER_STANDARD_INCH:
-                strncat(string, " inch", sizeof(" inch")-1);             
+                strncat(string, " inch", sizeof(string)-sizeof(" inch")-1);             
                 break;
         }
     }
