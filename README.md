@@ -15,6 +15,8 @@ The image below shows size of the  **nrf52840_caliper** board, which is sized to
 
 ![here](https://github.com/foldedtoad/caliper_keyboard/blob/master/images/caliper_board_w_case.JPEG)
 
+## Video of Caliper_Keyboard
+There is a youtube video showing the caliper_keyboard attached to a cheap caliper: https://youtu.be/K_FeKUWlJKM
 
 ## How to Build
 There are two easy methods to build the firmware.
