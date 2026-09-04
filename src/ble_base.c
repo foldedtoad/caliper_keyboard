@@ -80,7 +80,7 @@ static const struct bt_data scand[] = {
 };
 
 static const struct bt_le_adv_param *advert_param = 
-    BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_ONE_TIME,
+    BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONN,
                     BT_GAP_ADV_FAST_INT_MIN_2,
                     BT_GAP_ADV_FAST_INT_MAX_2,
                     NULL);

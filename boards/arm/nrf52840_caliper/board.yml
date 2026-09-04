@@ -1,0 +1,7 @@
+board:
+  name: nrf52840_caliper
+  full_name: nRF52840 CALIPER
+  vendor: foldedtoad
+  socs:
+  - name: nrf52840
+  

@@ -196,7 +196,7 @@ int ble_alt_init(void)
         return 0;
     }
 
-    err = bt_le_adv_start(BT_LE_ADV_CONN, 
+    err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, 
                           advert, ARRAY_SIZE(advert), 
                           scan,   ARRAY_SIZE(scan));
     if (err) {
