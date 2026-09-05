@@ -38,7 +38,7 @@
             label = "DATA";
         };
         caliper_buzzer: buzzer {
-            gpios = <&gpio0 28 0>;
+            gpios = <&gpio0 03 0>;   /* was P0.28, now P0.03 */
             label = "BUZZER";
         };
     };
