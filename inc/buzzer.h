@@ -25,6 +25,6 @@ typedef struct {
 
 void     buzzer_init(void);
 uint32_t buzzer_play(buzzer_play_t * playlist);
-void     buzzer_stop(void);
+void     buzzer_halt(void);
 
 #endif /* __BUZZER_H__ */

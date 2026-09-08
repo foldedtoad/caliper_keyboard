@@ -6,6 +6,7 @@
 
 /dts-v1/;
 #include <nordic/nrf52840_qiaa.dtsi>
+#include <zephyr/dt-bindings/pwm/pwm.h>
 
 / {
     model = "nRF52840 CALIPER";
@@ -38,9 +39,20 @@
             label = "DATA";
         };
         caliper_buzzer: buzzer {
-            gpios = <&gpio0 03 0>;   /* was P0.28, now P0.03 */
+            gpios = <&gpio0 28 0>;   /* P0.28, --> P0.03 */
             label = "BUZZER";
         };
+    };
+
+    /*
+     * CMT-322-65-SMT-TR passive piezo buzzer, driven via PWM on P0.03.
+     * Bound to Zephyr's in-tree "pwm-buzzer" driver (zephyr/drivers/buzzer.h).
+     * The period cell below (PWM_HZ(4000)) is a documentary default; the
+     * application selects the actual tone frequency at runtime.
+     */
+    buzzer0_dev: buzzer0 {
+        compatible = "pwm-buzzer";
+        pwms = <&pwm0 0 PWM_HZ(4000) PWM_POLARITY_NORMAL>;
     };
 
     aliases {
@@ -49,6 +61,7 @@
         caliper-clock  = &caliper_clock;
         caliper-data   = &caliper_data;
         caliper-buzzer = &caliper_buzzer;
+        buzzer0        = &buzzer0_dev;
     };
 };
 
@@ -85,7 +98,20 @@
                     <NRF_PSEL(UART_RX, 0, 25)>;
             low-power-enable;
         };
-    };     
+    };
+
+    pwm0_default: pwm0_default {
+        group1 {
+            psels = <NRF_PSEL(PWM_OUT0, 0, 3)>;
+        };
+    };
+
+    pwm0_sleep: pwm0_sleep {
+        group1 {
+            psels = <NRF_PSEL(PWM_OUT0, 0, 3)>;
+            low-power-enable;
+        };
+    };
 };
 
 &uart0 {
@@ -94,6 +120,13 @@
     current-speed = <115200>;
     pinctrl-0 = <&uart0_default>;
     pinctrl-1 = <&uart0_sleep>;
+    pinctrl-names = "default", "sleep";
+};
+
+&pwm0 {
+    status = "okay";
+    pinctrl-0 = <&pwm0_default>;
+    pinctrl-1 = <&pwm0_sleep>;
     pinctrl-names = "default", "sleep";
 };
 
