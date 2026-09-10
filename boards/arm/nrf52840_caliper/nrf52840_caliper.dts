@@ -45,7 +45,7 @@
     };
 
     /*
-     * CMT-322-65-SMT-TR passive piezo buzzer, driven via PWM on P0.28.
+     * CMT-322-65-SMT-TR passive piezo buzzer, driven via PWM on P0.03.
      * Bound to Zephyr's in-tree "pwm-buzzer" driver (zephyr/drivers/buzzer.h).
      * The period cell below (PWM_HZ(4000)) is a documentary default; the
      * application selects the actual tone frequency at runtime.
@@ -102,13 +102,13 @@
 
     pwm0_default: pwm0_default {
         group1 {
-            psels = <NRF_PSEL(PWM_OUT0, 0, 28)>;
+            psels = <NRF_PSEL(PWM_OUT0, 0, 3)>;
         };
     };
 
     pwm0_sleep: pwm0_sleep {
         group1 {
-            psels = <NRF_PSEL(PWM_OUT0, 0, 28)>;
+            psels = <NRF_PSEL(PWM_OUT0, 0, 3)>;
             low-power-enable;
         };
     };

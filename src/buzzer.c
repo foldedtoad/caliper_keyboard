@@ -139,18 +139,6 @@ uint32_t buzzer_play(buzzer_play_t * playlist)
 }
 
 /*---------------------------------------------------------------------------*/
-/*  Named buzzer_halt() rather than buzzer_stop() to avoid colliding with   */
-/*  the Zephyr buzzer driver's own buzzer_stop(const struct device *) from  */
-/*  <zephyr/drivers/buzzer.h>, which is included above.                    */
-/*---------------------------------------------------------------------------*/
-void buzzer_halt(void)
-{
-    k_timer_stop(&buzzer_timer);
-
-    buzzer_off();
-}
-
-/*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
 void buzzer_init(void)
