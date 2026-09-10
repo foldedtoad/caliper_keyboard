@@ -39,7 +39,7 @@
             label = "DATA";
         };
         caliper_buzzer: buzzer {
-            gpios = <&gpio0 03 0>;
+            gpios = <&gpio0 3 0>;
             label = "BUZZER";
         };
     };

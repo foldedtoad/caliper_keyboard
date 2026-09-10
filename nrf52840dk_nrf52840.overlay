@@ -4,6 +4,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+#include <zephyr/dt-bindings/pwm/pwm.h>
+
 /*
  *  Add Caliper GPIO pins to DTS config
  */
@@ -33,11 +35,23 @@
         };        
     };
 
+    /*
+     * CMT-322-65-SMT-TR passive piezo buzzer, driven via PWM on P0.03.
+     * Bound to Zephyr's in-tree "pwm-buzzer" driver (zephyr/drivers/buzzer.h).
+     * The period cell below (PWM_HZ(4000)) is a documentary default; the
+     * application selects the actual tone frequency at runtime.
+     */
+    buzzer0_dev: buzzer0 {
+        compatible = "pwm-buzzer";
+        pwms = <&pwm0 0 PWM_HZ(4000) PWM_POLARITY_NORMAL>;
+    };
+
     aliases {
         watchdog0 = &wdt0;
         caliper-data   = &caliper_data;
         caliper-clock  = &caliper_clock;
         caliper-buzzer = &caliper_buzzer;
+        buzzer0        = &buzzer0_dev;
     };
 };
 
@@ -58,7 +72,20 @@
                     <NRF_PSEL(UART_RX, 0, 25)>;
             low-power-enable;
         };
-    };   
+    };
+
+    pwm0_default: pwm0_default {
+        group1 {
+            psels = <NRF_PSEL(PWM_OUT0, 0, 28)>;
+        };
+    };
+
+    pwm0_sleep: pwm0_sleep {
+        group1 {
+            psels = <NRF_PSEL(PWM_OUT0, 0, 28)>;
+            low-power-enable;
+        };
+    };    
 };
 
 &uart0 {
