@@ -6,7 +6,7 @@
 
 const struct {} battery_def_include_once;
 
-#define BATTERY_MEAS_ADC_INPUT              NRF_SAADC_VDD  //HDIV5
+#define BATTERY_MEAS_ADC_INPUT              NRF_SAADC_INPUT_VDD  //HDIV5
 #define BATTERY_MEAS_ADC_GAIN               ADC_GAIN_1_6
 #define BATTERY_MEAS_VOLTAGE_GAIN           6
 

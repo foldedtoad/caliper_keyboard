@@ -1,13 +1,21 @@
 /*
  *  buzzer.c  -- buzzer driver
  *
- *  Copyright (c) 2023   Callender-Consulting
- *
  *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Drives a CMT-322-65-SMT-TR piezo buzzer through Zephyr's generic
+ *  buzzer driver API (zephyr/drivers/buzzer.h). Unlike the original
+ *  buzzer, this part is passive and requires an externally supplied
+ *  square-wave drive signal (it does not self-oscillate); the "pwm-buzzer"
+ *  backend (bound to P0.03 in the board DTS) supplies that signal.
+ *
+ *  Volume is fixed at BUZZER_VOLUME_MAX so the backend always drives a
+ *  50% duty-cycle square wave -- perceived loudest for a piezo, and the
+ *  duty cycle called for by the CMT-322-65-SMT-TR datasheet.
  */
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
-#include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/buzzer.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/sys/util.h>
 #include <inttypes.h>
@@ -20,11 +28,12 @@
 LOG_MODULE_REGISTER(buzzer, LOG_LEVEL_INF);
 
 /*---------------------------------------------------------------------------*/
-/*                                                                           */
+/*  CMT-322-65-SMT-TR drive requirement: 4000 Hz square wave.               */
 /*---------------------------------------------------------------------------*/
 
-static const struct gpio_dt_spec buzzer_spec = 
-                        GPIO_DT_SPEC_GET_OR(BUZZER_NODE, gpios, 0);
+#define BUZZER_TONE_HZ      4000
+
+static const struct device * const buzzer_dev = DEVICE_DT_GET(BUZZER_PWM_NODE);
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -39,19 +48,21 @@ K_TIMER_DEFINE(buzzer_timer, buzzer_timeout_callback, NULL);
 static bool  in_play = false;
 
 /*---------------------------------------------------------------------------*/
-/*                                                                           */
+/*  Drive the buzzer at BUZZER_TONE_HZ. Duration is left to our own timer   */
+/*  (see buzzer_process_playlist below), so the tone plays until explicitly */
+/*  stopped rather than the driver auto-silencing it after some duration.  */
 /*---------------------------------------------------------------------------*/
 void buzzer_on(void)
 {
-    gpio_pin_set_dt(&buzzer_spec, 1);
+    buzzer_tone(buzzer_dev, BUZZER_TONE_HZ, BUZZER_DURATION_FOREVER);
 }
 
 /*---------------------------------------------------------------------------*/
-/*                                                                           */
+/*  Silence the buzzer.                                                     */
 /*---------------------------------------------------------------------------*/
 void buzzer_off(void)
 {
-    gpio_pin_set_dt(&buzzer_spec, 0);
+    buzzer_stop(buzzer_dev);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -130,16 +141,6 @@ uint32_t buzzer_play(buzzer_play_t * playlist)
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-void buzzer_stop(void)
-{
-    k_timer_stop(&buzzer_timer);
-
-    buzzer_off(); 
-}
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*---------------------------------------------------------------------------*/
 void buzzer_init(void)
 {
     (void) buzzer_on;
@@ -147,14 +148,17 @@ void buzzer_init(void)
 
     LOG_INF("%s", __func__);
 
-    if (!device_is_ready(buzzer_spec.port)) {
-        LOG_ERR("Error: Caliper %s is not ready", buzzer_spec.port->name);
+    if (!device_is_ready(buzzer_dev)) {
+        LOG_ERR("Error: buzzer device %s is not ready", buzzer_dev->name);
         return;
     }
 
-    LOG_INF("buzzer port '%s', pin %d", buzzer_spec.port->name, buzzer_spec.pin);
+    LOG_INF("buzzer '%s', tone %d Hz", buzzer_dev->name, BUZZER_TONE_HZ);
 
-    gpio_pin_configure_dt(&buzzer_spec, (GPIO_PULL_DOWN | GPIO_OUTPUT));
+    /* Force max volume so the backend always drives a 50% duty cycle. */
+    buzzer_set_volume(buzzer_dev, BUZZER_VOLUME_MAX);
+
+    buzzer_off();
 
     buzzer_play(&startup_sound);
 }

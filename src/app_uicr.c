@@ -13,9 +13,12 @@
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/flash.h>
 
-#include <nrf.h>
+//#include <nrf.h>
+#include <hal/nrf_saadc.h>   // instead of <nrf.h> + raw defines, for SAADC
+#include <hal/nrf_uicr.h>    // instead of <nrf.h>, for UICR
+
 #include <nrfx_nvmc.h>
-#include <nrf_erratas.h>
+//#include <nrf_erratas.h>
 
 #include "app_uicr.h"
 
