@@ -1,0 +1,14 @@
+/*
+ * Copyright (c) 2022-2023 Marcin Niestroj
+ * Copyright (c) 2026 Robin Callender
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include "xiao_caliper_common.dtsi"
+
+/ {
+	model = "XIAO Caliper";
+	compatible = "seeed,xiao-caliper";
+};

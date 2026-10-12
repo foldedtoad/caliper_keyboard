@@ -1,0 +1,11 @@
+# XIAO CALIPER board configuration
+
+# Copyright (c) 2022 Marcin Niestroj
+# Copyright (c) 2026 Robin Callender
+# SPDX-License-Identifier: Apache-2.0
+
+if BOARD_XIAO_CALIPER
+
+source "boards/common/usb/Kconfig.cdc_acm_serial.defconfig"
+
+endif # BOARD_XIAO_CALIPER

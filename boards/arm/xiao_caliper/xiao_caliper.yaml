@@ -1,0 +1,23 @@
+identifier: xiao_caliper/nrf52840
+name: XIAO CALIPER
+type: mcu
+arch: arm
+ram: 256
+flash: 1024
+toolchain:
+  - zephyr
+  - gnuarmemb
+supported:
+  - adc
+  - bluetooth
+  - counter
+  - gpio
+  - i2s
+  - pwm
+  - usbd
+  - watchdog
+  - netif:openthread
+  - xiao_adc
+  - xiao_gpio
+  - xiao_serial
+vendor: seeed
