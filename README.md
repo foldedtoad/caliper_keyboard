@@ -20,16 +20,28 @@ The image below shows size of the  **nrf52840_caliper** board, which is sized to
 There is a youtube video showing the caliper_keyboard attached to a cheap caliper: https://youtu.be/K_FeKUWlJKM
 
 ## How to Build
-There are two easy methods to build the firmware.
 
-### CMake Method
-This build method use cmake directly, and doesn't use west or ninja.
-1) cd to your caliper_keyboard root directory
-2) run "./configure.sh"
-3) cd to build directory
-4) make
+This firmware is built against **Zephyr v4.4** (tested with v4.4.2) using
+`west`. The primary target is the **XIAO nRF52840** based caliper board
+(`xiao_caliper`); the nRF52840 DK and the older `nrf52840_caliper` board
+also still build.
 
-### West Method
-1) cd to your caliper_keyboard root directory
-2) rm -rf build
-3) west build -b nrf52840_caliper
+```
+cd <your zephyr workspace>
+west build -b xiao_caliper/nrf52840 <path>/caliper_keyboard -p always
+```
+
+The build produces `zephyr.uf2`. To flash: double-tap the XIAO's reset
+button so it appears as a USB drive, then copy `build/zephyr/zephyr.uf2`
+onto it. (The Seeed/Adafruit UF2 bootloader is not touched.)
+
+Other targets:
+
+```
+west build -b nrf52840dk/nrf52840 <path>/caliper_keyboard
+west build -b nrf52840_caliper/nrf52840 <path>/caliper_keyboard
+```
+
+See [docs/PORTING_zephyr_4.4_xiao.md](docs/PORTING_zephyr_4.4_xiao.md) for
+what changed from Zephyr 3.5 and the XIAO hardware notes.
+

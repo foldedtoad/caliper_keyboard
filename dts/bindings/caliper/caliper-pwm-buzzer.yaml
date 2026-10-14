@@ -1,0 +1,16 @@
+# Copyright (c) 2026 Callender-Consulting
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  Passive piezo buzzer driven by one PWM channel (e.g. through a FET).
+  The application chooses tone frequency and duty cycle at run time; the
+  period cell in 'pwms' is only a documentary default.
+
+compatible: "caliper-pwm-buzzer"
+
+include: base.yaml
+
+properties:
+  pwms:
+    type: phandle-array
+    required: true

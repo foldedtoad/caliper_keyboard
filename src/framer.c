@@ -35,7 +35,7 @@ static const struct gpio_dt_spec clock_spec =
 
 #if logic_analyzer_testing
 static const struct gpio_dt_spec debug_spec = 
-                        GPIO_DT_SPEC_GET_OR(BUZZER_NODE, gpios, 0);
+                        GPIO_DT_SPEC_GET_OR(DEBUG_NODE, gpios, 0);
 #endif
 
 void framerActiveCallback(struct k_timer * timer);

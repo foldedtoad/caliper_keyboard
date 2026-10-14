@@ -35,20 +35,11 @@
 		};
 	};
 
-	pwmleds {
-		compatible = "pwm-leds";
-
-		pwm_led0: pwm_led_0 {
-			pwms = <&pwm0 0 PWM_MSEC(20) PWM_POLARITY_INVERTED>;
-		};
-	};
-
 	/* These aliases are provided for compatibility with samples */
 	aliases {
 		led0 = &led0;
 		led1 = &led1;
 		led2 = &led2;
-		pwm-led0 = &pwm_led0;
 		mcuboot-led0 = &led0;
 		watchdog0 = &wdt0;
 	};

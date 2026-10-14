@@ -11,4 +11,55 @@
 / {
 	model = "XIAO Caliper";
 	compatible = "seeed,xiao-caliper";
+
+	/*
+	 * Snapshot button (SW2): switches 3V3 onto the BUTTON net when pressed,
+	 * with no external pull-down, so use the internal pull-down and treat
+	 * the pin as active-high.   BUTTON = P0.04 (XIAO D4).
+	 */
+	buttons {
+		compatible = "gpio-keys";
+		button0: button_0 {
+			gpios = <&gpio0 4 (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>;
+			label = "SNAPSHOT";
+		};
+	};
+
+	/*
+	 * Caliper interface.  A_CLOCK/A_DATA are the MCU side of the
+	 * SN74AXC2T45 level shifter (caliper side is B_CLOCK/B_DATA, DIR tied
+	 * low so data flows B -> A).  DEBUG goes to J1 pin 5 for a logic analyzer.
+	 */
+	caliper {
+		compatible = "caliper";
+		caliper_clock: clock {
+			gpios = <&gpio1 14 0>;		/* P1.14, XIAO D9 (MISO) */
+			label = "CLOCK";
+		};
+		caliper_data: data {
+			gpios = <&gpio1 13 0>;		/* P1.13, XIAO D8 (SCK)  */
+			label = "DATA";
+		};
+		caliper_debug: debug {
+			gpios = <&gpio1 15 0>;		/* P1.15, XIAO D10 (MOSI) */
+			label = "DEBUG";
+		};
+	};
+
+	/*
+	 * BZ1 piezo, switched by Q1.  The part is passive and needs a 4 kHz
+	 * square wave; the application picks frequency/duty at run time.
+	 */
+	buzzer0: buzzer {
+		compatible = "caliper-pwm-buzzer";
+		pwms = <&pwm0 0 PWM_HZ(4000) PWM_POLARITY_NORMAL>;
+	};
+
+	aliases {
+		sw0            = &button0;
+		caliper-clock  = &caliper_clock;
+		caliper-data   = &caliper_data;
+		caliper-debug  = &caliper_debug;
+		caliper-buzzer = &buzzer0;
+	};
 };

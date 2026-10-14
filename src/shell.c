@@ -30,7 +30,7 @@ LOG_MODULE_REGISTER(app_shell, LOG_LEVEL_INF);
 /*---------------------------------------------------------------------------*/
 
 static const struct device * const device =
-                  DEVICE_DT_GET_OR_NULL(DT_NODELABEL(uart0));
+                  DEVICE_DT_GET_OR_NULL(DT_CHOSEN(zephyr_shell_uart));
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -194,7 +194,7 @@ int caliper_shell_init(void)
         return -1;
     }
 
-    LOG_INF("UART '%s'", device->name);
+    LOG_INF("Shell device '%s'", device->name);
 
     return 0;
 }

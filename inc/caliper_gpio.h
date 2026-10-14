@@ -8,27 +8,25 @@
 #ifndef __CALIPER_GPIO_H
 #define __CALIPER_GPIO_H
 
+#include <zephyr/devicetree.h>
+
 /*---------------------------------------------------------------------------*/
-/*  Pins related to caliper                                                  */
+/*  Pins related to caliper.  The board (or an overlay) provides the nodes   */
+/*  and these aliases:  caliper-clock, caliper-data, caliper-buzzer.         */
+/*  Optional:           caliper-debug  (logic-analyzer test point).          */
 /*---------------------------------------------------------------------------*/
 
 #define CLOCK_NODE      DT_ALIAS(caliper_clock)
-#define CLOCK           DT_GPIO_PIN(DT_ALIAS(caliper_clock), gpios)
-#define CLOCK_PORT      DT_LABEL(DT_PHANDLE_BY_IDX(DT_ALIAS(caliper_clock), gpios, 0))
-#define CLOCK_FLAGS     DT_PHA_BY_IDX(DT_ALIAS(caliper_clock), gpios, 0, flags)
-#define CLOCK_LABEL     DT_PROP(DT_ALIAS(caliper_clock), label)
+#define CLOCK           DT_GPIO_PIN(CLOCK_NODE, gpios)
+#define CLOCK_LABEL     DT_PROP(CLOCK_NODE, label)
 
 #define DATA_NODE       DT_ALIAS(caliper_data)
-#define DATA            DT_GPIO_PIN(DT_ALIAS(caliper_data), gpios)
-#define DATA_PORT       DT_LABEL(DT_PHANDLE_BY_IDX(DT_ALIAS(caliper_data), gpios, 0))
-#define DATA_FLAGS      DT_PHA_BY_IDX(DT_ALIAS(caliper_data), gpios, 0, flags)
-#define DATA_LABEL      DT_PROP(DT_ALIAS(caliper_data), label)
+#define DATA            DT_GPIO_PIN(DATA_NODE, gpios)
+#define DATA_LABEL      DT_PROP(DATA_NODE, label)
 
+#define DEBUG_NODE      DT_ALIAS(caliper_debug)
+
+/* Passive piezo buzzer, driven by a PWM channel ("caliper-pwm-buzzer"). */
 #define BUZZER_NODE     DT_ALIAS(caliper_buzzer)
-#define BUZZER          DT_GPIO_PIN(DT_ALIAS(caliper_buzzer), gpios)
-#define BUZZER_PORT     DT_LABEL(DT_PHANDLE_BY_IDX(DT_ALIAS(caliper_buzzer), gpios, 0))
-#define BUZZER_FLAGS    DT_PHA_BY_IDX(DT_ALIAS(caliper_buzzer), gpios, 0, flags)
-#define BUZZER_LABEL    DT_PROP(DT_ALIAS(caliper_buzzer), label)
-#define BUZZER_PWM_NODE DT_ALIAS(buzzer0)
 
 #endif  /* __CALIPER_GPIO_H */

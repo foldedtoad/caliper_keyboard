@@ -1,24 +1,25 @@
 /*
- *   app_uicr.c
+ *   app_uicr.c  -- persistent application parameters
  *
  * Copyright (c) 2023, Callender-Consulting LLC
  *
  * SPDX-License-Identifier: Apache-2.0
+ *
+ * History: these two parameters (line_end, standard) used to be kept in the
+ * nRF52840 UICR "CUSTOMER" registers, updated by erasing and rewriting the
+ * whole UICR page.  That is unsafe on boards that use the Adafruit/Seeed UF2
+ * bootloader (XIAO nRF52840): the bootloader's start address lives in UICR,
+ * so a power loss between the erase and the rewrite leaves a board that
+ * will not boot.
+ *
+ * The values are now stored with the Zephyr settings subsystem (NVS) in the
+ * board's "storage" partition.  The API and the file name are unchanged so
+ * the rest of the application is unaffected.
  */
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
-#include <zephyr/sys/printk.h>
-#include <zephyr/shell/shell.h>
-#include <zephyr/drivers/uart.h> 
-#include <zephyr/devicetree.h>
-#include <zephyr/drivers/flash.h>
-
-//#include <nrf.h>
-#include <hal/nrf_saadc.h>   // instead of <nrf.h> + raw defines, for SAADC
-#include <hal/nrf_uicr.h>    // instead of <nrf.h>, for UICR
-
-#include <nrfx_nvmc.h>
-//#include <nrf_erratas.h>
+#include <zephyr/settings/settings.h>
+#include <errno.h>
 
 #include "app_uicr.h"
 
@@ -29,95 +30,56 @@ LOG_MODULE_REGISTER(uicr, LOG_LEVEL_INF);
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
 
-#define __UNINITIALIZED__ (0x000000FF)
+#define SETTINGS_TREE        "caliper"
+#define SETTINGS_KEY_LINE    SETTINGS_TREE "/line_end"
+#define SETTINGS_KEY_STD     SETTINGS_TREE "/standard"
 
-#define __LINE_END__    0
-#define __STANDARD__    1
-
-#define REG_LINE_END  CUSTOMER[__LINE_END__] 
-#define REG_STANDARD  CUSTOMER[__STANDARD__] 
-
-static const struct device * const device =
-                  DEVICE_DT_GET_OR_NULL(DT_CHOSEN(zephyr_flash_controller));
-
-/*
- *  Notes:
- *      flash erase flash-controller@4001e000 10001000 308  // for UICR page
- *      flash read  flash-controller@4001e000 10001080
- *      flash write flash-controller@4001e000 10001080 2
- *      (off_t)NRF_UICR = 0x10001000
- *      sizeof(*NRF_UICR) = 0x308
- */
-
-static uint8_t copy_buffer [sizeof(*NRF_UICR)];
-
+static uint8_t current_line_end = INVALID_LINE_END;
+static uint8_t current_standard = INVALID_STANDARD;
 
 /*---------------------------------------------------------------------------*/
-/*                                                                           */
+/*  Called by the settings subsystem for each stored "caliper/..." item.     */
 /*---------------------------------------------------------------------------*/
-uint8_t app_uicr_read_one(off_t addr)
+static int caliper_settings_set(const char * name, size_t len,
+                                settings_read_cb read_cb, void * cb_arg)
 {
-    uint8_t data;
+    const char * next;
+    uint8_t      value;
 
-    int ret = flash_read(device, addr, (void*)&data, sizeof(uint8_t));
-    if (ret != 0) {
-        LOG_ERR("%s: Flash_read failed: %d", __func__, ret);
-        return ret;
+    if (len != sizeof(value)) {
+        return -EINVAL;
     }
 
-    LOG_DBG("%s: addr(%p): value(0x%x)", __func__, (void*)addr, data);
+    if (settings_name_steq(name, "line_end", &next) && !next) {
+        if (read_cb(cb_arg, &value, sizeof(value)) < 0) {
+            return -EIO;
+        }
+        current_line_end = value;
+        return 0;
+    }
 
-    return data;
+    if (settings_name_steq(name, "standard", &next) && !next) {
+        if (read_cb(cb_arg, &value, sizeof(value)) < 0) {
+            return -EIO;
+        }
+        current_standard = value;
+        return 0;
+    }
+
+    return -ENOENT;
 }
 
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*---------------------------------------------------------------------------*/
-void app_uicr_write_one(off_t addr, uint8_t data)
-{
-    int    ret;
-    off_t  uicr_page_base = (off_t)NRF_UICR;
-    size_t uicr_page_size = sizeof(*NRF_UICR);
-
-    LOG_DBG("%s: addr: %p, data(%d)", __func__, (void*)addr, data);
-
-    LOG_DBG("%s: read UICR", __func__);
-    ret = flash_read(device, uicr_page_base,
-                    (void*)&copy_buffer, uicr_page_size);
-    if (ret != 0) {
-        LOG_ERR("Flash_write: read UICR failed: %d", ret);
-        return;
-    }
-
-    LOG_DBG("%s: erase UICR", __func__);
-    ret = flash_erase(device, uicr_page_base, uicr_page_size);
-    if (ret != 0) {
-        LOG_ERR("Flash_write: erase UICR failed: %d", ret);
-        return;
-    }
-
-    copy_buffer[addr - uicr_page_base] = data;
-
-    LOG_DBG("%s: write UICR", __func__);
-    ret = flash_write(device, uicr_page_base,
-                      (void*)&copy_buffer, uicr_page_size);
-    if (ret < 0) {
-        LOG_ERR("Flash_write: write failed: %d", ret);
-        return;
-    }
-}
+SETTINGS_STATIC_HANDLER_DEFINE(caliper_params, SETTINGS_TREE, NULL,
+                               caliper_settings_set, NULL, NULL);
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
 line_end_t app_uicr_get_line_end(void)
 {
-    line_end_t line_end = app_uicr_read_one((uint32_t)&NRF_UICR->REG_LINE_END);
+    LOG_DBG("%s: LINE_END: 0x%x", __func__, current_line_end);
 
-    LOG_DBG("%s: Get LINE_END: addr [0x%x], value: 0x%x", __func__,
-            (uint32_t)&NRF_UICR->REG_LINE_END, (uint8_t)line_end);    
-
-    return line_end;
+    return (line_end_t) current_line_end;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -125,10 +87,17 @@ line_end_t app_uicr_get_line_end(void)
 /*---------------------------------------------------------------------------*/
 void app_uicr_set_line_end(line_end_t line_end)
 {
-    LOG_DBG("%s: Set LINE_END: addr [0x%x], value: 0x%x", __func__, 
-            (uint32_t)&NRF_UICR->REG_LINE_END, line_end);
+    uint8_t value = (uint8_t) line_end;
+    int     ret;
 
-    app_uicr_write_one((off_t)&NRF_UICR->REG_LINE_END, (uint8_t)line_end);   
+    LOG_DBG("%s: LINE_END: 0x%x", __func__, value);
+
+    ret = settings_save_one(SETTINGS_KEY_LINE, &value, sizeof(value));
+    if (ret) {
+        LOG_ERR("%s: save failed: %d", __func__, ret);
+        return;
+    }
+    current_line_end = value;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -136,12 +105,9 @@ void app_uicr_set_line_end(line_end_t line_end)
 /*---------------------------------------------------------------------------*/
 standard_t app_uicr_get_standard(void)
 {
-    standard_t standard = app_uicr_read_one((uint32_t)&NRF_UICR->REG_STANDARD);
+    LOG_DBG("%s: STANDARD: 0x%x", __func__, current_standard);
 
-    LOG_DBG("%s: Get STANDARD: addr: [0x%x], value: 0x%x", __func__,
-            (uint32_t)&NRF_UICR->REG_STANDARD, (uint8_t)standard);
-
-    return standard;
+    return (standard_t) current_standard;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -149,10 +115,17 @@ standard_t app_uicr_get_standard(void)
 /*---------------------------------------------------------------------------*/
 void app_uicr_set_standard(standard_t standard)
 {
-    LOG_DBG("%s: Set STANDARD: addr: [0x%x], value: 0x%x", __func__,
-            (uint32_t)&NRF_UICR->REG_STANDARD, standard);
+    uint8_t value = (uint8_t) standard;
+    int     ret;
 
-    app_uicr_write_one((uint32_t)&NRF_UICR->REG_STANDARD, (uint8_t)standard);   
+    LOG_DBG("%s: STANDARD: 0x%x", __func__, value);
+
+    ret = settings_save_one(SETTINGS_KEY_STD, &value, sizeof(value));
+    if (ret) {
+        LOG_ERR("%s: save failed: %d", __func__, ret);
+        return;
+    }
+    current_standard = value;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -160,32 +133,32 @@ void app_uicr_set_standard(standard_t standard)
 /*---------------------------------------------------------------------------*/
 void app_uicr_init(void)
 {
+    int ret;
+
     LOG_INF("%s", __func__);
 
-    line_end_t line_end;
-    standard_t standard;
-
-    if (device) {
-        LOG_INF("%s: Flash '%s'", __func__, device->name);
+    /*
+     *  CONFIG_BT_SETTINGS is off, so Bluetooth does not initialize the
+     *  settings subsystem for us.  This call is harmless if repeated.
+     */
+    ret = settings_subsys_init();
+    if (ret) {
+        LOG_ERR("%s: settings_subsys_init failed: %d", __func__, ret);
     }
-    else {
-        LOG_ERR("%s: Flash device not found", __func__);
+
+    ret = settings_load_subtree(SETTINGS_TREE);
+    if (ret) {
+        LOG_ERR("%s: settings_load_subtree failed: %d", __func__, ret);
     }
 
-    line_end = app_uicr_get_line_end();
-
-    if (line_end == __UNINITIALIZED__ || line_end == INVALID_LINE_END) {
+    if (current_line_end != ASCIIZ && current_line_end != NEWLINE) {
         app_uicr_set_line_end(NEWLINE);               // set default
-        line_end = app_uicr_get_line_end();
-    }        
-
-    standard = app_uicr_get_standard();
-
-    if (standard == __UNINITIALIZED__ || standard == INVALID_STANDARD) {
-        app_uicr_set_standard(INCLUDE);               // set default
-        standard = app_uicr_get_standard();
     }
 
-    LOG_INF("[LINE_END] 0x%x", line_end);
-    LOG_INF("[STANDARD] 0x%x", standard);
+    if (current_standard != INCLUDE && current_standard != EXCLUDE) {
+        app_uicr_set_standard(INCLUDE);               // set default
+    }
+
+    LOG_INF("[LINE_END] 0x%x", current_line_end);
+    LOG_INF("[STANDARD] 0x%x", current_standard);
 }

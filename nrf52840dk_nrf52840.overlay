@@ -29,20 +29,15 @@
             gpios = <&gpio0 4 0>;
             label = "CLOCK";
         };
-        caliper_buzzer: buzzer {
-            gpios = <&gpio0 28 0>;
-            label = "BUZZER";
-        };        
     };
 
     /*
-     * CMT-322-65-SMT-TR passive piezo buzzer, driven via PWM on P0.28.
-     * Bound to Zephyr's in-tree "pwm-buzzer" driver (zephyr/drivers/buzzer.h).
-     * The period cell below (PWM_HZ(4000)) is a documentary default; the
-     * application selects the actual tone frequency at runtime.
+     * CMT-322-65-SMT-TR passive piezo buzzer, driven via PWM on P0.28
+     * (see pwm0_default below).  The period cell is a documentary default;
+     * the application selects the actual tone frequency at runtime.
      */
     buzzer0_dev: buzzer0 {
-        compatible = "pwm-buzzer";
+        compatible = "caliper-pwm-buzzer";
         pwms = <&pwm0 0 PWM_HZ(4000) PWM_POLARITY_NORMAL>;
     };
 
@@ -50,8 +45,7 @@
         watchdog0 = &wdt0;
         caliper-data   = &caliper_data;
         caliper-clock  = &caliper_clock;
-        caliper-buzzer = &caliper_buzzer;
-        buzzer0        = &buzzer0_dev;
+        caliper-buzzer = &buzzer0_dev;
     };
 };
 

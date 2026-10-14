@@ -17,7 +17,7 @@ LOG_MODULE_REGISTER(buttons, LOG_LEVEL_INF);
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
 
-#define SW_GPIO_DEV    DT_NODELABEL(gpio0)
+#define SW_GPIO_DEV    DT_GPIO_CTLR(DT_ALIAS(sw0), gpios)
 
 #define SW0_PIN        DT_GPIO_PIN(DT_ALIAS(sw0), gpios)
 #define SW0_FLAGS      DT_GPIO_FLAGS(DT_ALIAS(sw0), gpios)
@@ -151,8 +151,8 @@ void buttons_init(void)
     LOG_INF("%s", __func__);
 
     gpiob = DEVICE_DT_GET(SW_GPIO_DEV);
-    if (!gpiob) {
-        LOG_ERR("device not found. %s", DEVICE_DT_NAME(SW_GPIO_DEV));
+    if (!device_is_ready(gpiob)) {
+        LOG_ERR("device not ready. %s", DEVICE_DT_NAME(SW_GPIO_DEV));
         return;
     }
 

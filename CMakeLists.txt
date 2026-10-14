@@ -8,10 +8,11 @@ set_property(GLOBAL APPEND PROPERTY HEX_FILES_TO_MERGE
 set(BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(DTS_ROOT_BINDINGS "${CMAKE_CURRENT_SOURCE_DIR}")
 
-#set(BOARD nrf52840dk_nrf52840)
-set(BOARD nrf52840_caliper)
+# Select the board on the command line, e.g.:
+#   west build -b xiao_caliper/nrf52840
+# (a BOARD set here would override -b and defeat board qualifiers)
 
-find_package(Zephyr)
+find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(caliper)
 
 include_directories(app PRIVATE inc)
