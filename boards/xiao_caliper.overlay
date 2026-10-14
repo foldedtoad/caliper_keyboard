@@ -1,0 +1,14 @@
+/*
+ * xiao_caliper: put the console and shell on uart0 (115200 8N1) instead of
+ * the board default (USB CDC ACM).  uart0 is routed to the J1 header:
+ *   USART_TX = P1.11 (XIAO D6)   USART_RX = P1.12 (XIAO D7)
+ *
+ * Pair with boards/xiao_caliper.conf (turns the USB CDC backend off).
+ * Delete both files to return to the USB console.
+ */
+/ {
+	chosen {
+		zephyr,console = &uart0;
+		zephyr,shell-uart = &uart0;
+	};
+};

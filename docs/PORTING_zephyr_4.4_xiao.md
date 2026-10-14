@@ -52,10 +52,18 @@ port-relative, so P1.14 works.
 
 ## Behavior to know about
 
-- **Shell/console is USB CDC ACM** (the board's default, from
-  `cdc_acm_serial.dtsi`), not the UART header. Open the XIAO's USB port at
-  any baud. To use the J1 UART instead (115200 8N1), add to the board:
-  `chosen { zephyr,console = &uart0; zephyr,shell-uart = &uart0; };`
+- **Console and shell are on the UART header (J1, 115200 8N1)** for
+  `xiao_caliper`, set by two app-level files:
+  `boards/xiao_caliper.overlay` (chosen `zephyr,console` / `zephyr,shell-uart`
+  = `&uart0`) and `boards/xiao_caliper.conf` (turns off the board's default
+  USB CDC ACM console, and routes `LOG_INF` to the shell). Zephyr merges
+  them automatically for `west build -b xiao_caliper`; no extra build
+  options are needed. Connect a 3.3 V USB-serial adapter to USART_TX
+  (P1.11) / USART_RX (P1.12) and GND. Delete those two files to go back to
+  the USB CDC console.
+- `prj.conf` only enables the RTT log backend and disables the shell log
+  backend, so without `xiao_caliper.conf` `LOG_INF` output is visible only
+  over RTT, whichever console is chosen.
 - **Battery level is not meaningful yet.** `battery.c` measures VDD against a
   2.0-3.2 V coin-cell range. On the XIAO, VDD is a regulated 3.3 V, so it will
   read "high / 100%". Fixing it needs a decision about the battery chemistry
